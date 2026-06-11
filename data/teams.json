@@ -6,7 +6,6 @@
     "formation": "433",
     "style": "possession"
   },
-
   "France": {
     "attack": 91,
     "defense": 86,
@@ -14,7 +13,6 @@
     "formation": "4231",
     "style": "counter"
   },
-
   "Brazil": {
     "attack": 90,
     "defense": 85,
@@ -22,7 +20,6 @@
     "formation": "433",
     "style": "possession"
   },
-
   "England": {
     "attack": 88,
     "defense": 84,
@@ -30,7 +27,6 @@
     "formation": "4231",
     "style": "physical"
   },
-
   "Spain": {
     "attack": 87,
     "defense": 85,
@@ -38,7 +34,6 @@
     "formation": "433",
     "style": "possession"
   },
-
   "Germany": {
     "attack": 86,
     "defense": 83,
@@ -46,7 +41,6 @@
     "formation": "4231",
     "style": "high_press"
   },
-
   "Portugal": {
     "attack": 87,
     "defense": 82,
@@ -54,12 +48,291 @@
     "formation": "433",
     "style": "counter"
   },
-
   "Japan": {
     "attack": 79,
     "defense": 80,
     "elo": 1840,
     "formation": "4231",
     "style": "balanced"
+  },
+  "Mexico": {
+    "attack": 80,
+    "defense": 79,
+    "elo": 1850,
+    "formation": "433",
+    "style": "balanced"
+  },
+  "South Africa": {
+    "attack": 72,
+    "defense": 72,
+    "elo": 1700,
+    "formation": "4231",
+    "style": "physical"
+  },
+  "South Korea": {
+    "attack": 78,
+    "defense": 77,
+    "elo": 1800,
+    "formation": "4231",
+    "style": "high_press"
+  },
+  "Czechia": {
+    "attack": 76,
+    "defense": 78,
+    "elo": 1780,
+    "formation": "4231",
+    "style": "balanced"
+  },
+  "Canada": {
+    "attack": 77,
+    "defense": 75,
+    "elo": 1780,
+    "formation": "343",
+    "style": "high_press"
+  },
+  "Bosnia and Herzegovina": {
+    "attack": 75,
+    "defense": 74,
+    "elo": 1740,
+    "formation": "4231",
+    "style": "balanced"
+  },
+  "Qatar": {
+    "attack": 72,
+    "defense": 71,
+    "elo": 1680,
+    "formation": "532",
+    "style": "counter"
+  },
+  "Switzerland": {
+    "attack": 82,
+    "defense": 82,
+    "elo": 1900,
+    "formation": "3421",
+    "style": "balanced"
+  },
+  "Haiti": {
+    "attack": 68,
+    "defense": 67,
+    "elo": 1600,
+    "formation": "442",
+    "style": "counter"
+  },
+  "Scotland": {
+    "attack": 75,
+    "defense": 77,
+    "elo": 1760,
+    "formation": "343",
+    "style": "physical"
+  },
+  "Morocco": {
+    "attack": 83,
+    "defense": 82,
+    "elo": 1920,
+    "formation": "4231",
+    "style": "counter"
+  },
+  "United States": {
+    "attack": 80,
+    "defense": 78,
+    "elo": 1840,
+    "formation": "433",
+    "style": "high_press"
+  },
+  "Paraguay": {
+    "attack": 76,
+    "defense": 77,
+    "elo": 1780,
+    "formation": "442",
+    "style": "physical"
+  },
+  "Australia": {
+    "attack": 74,
+    "defense": 76,
+    "elo": 1740,
+    "formation": "4231",
+    "style": "physical"
+  },
+  "Turkey": {
+    "attack": 80,
+    "defense": 77,
+    "elo": 1830,
+    "formation": "4231",
+    "style": "high_press"
+  },
+  "Curacao": {
+    "attack": 67,
+    "defense": 66,
+    "elo": 1580,
+    "formation": "4231",
+    "style": "counter"
+  },
+  "Ivory Coast": {
+    "attack": 79,
+    "defense": 77,
+    "elo": 1820,
+    "formation": "433",
+    "style": "physical"
+  },
+  "Ecuador": {
+    "attack": 81,
+    "defense": 80,
+    "elo": 1880,
+    "formation": "433",
+    "style": "counter"
+  },
+  "Netherlands": {
+    "attack": 86,
+    "defense": 84,
+    "elo": 1950,
+    "formation": "433",
+    "style": "possession"
+  },
+  "Sweden": {
+    "attack": 79,
+    "defense": 78,
+    "elo": 1830,
+    "formation": "442",
+    "style": "balanced"
+  },
+  "Tunisia": {
+    "attack": 73,
+    "defense": 75,
+    "elo": 1720,
+    "formation": "4231",
+    "style": "balanced"
+  },
+  "Belgium": {
+    "attack": 85,
+    "defense": 82,
+    "elo": 1930,
+    "formation": "343",
+    "style": "possession"
+  },
+  "Egypt": {
+    "attack": 80,
+    "defense": 78,
+    "elo": 1840,
+    "formation": "433",
+    "style": "counter"
+  },
+  "Iran": {
+    "attack": 77,
+    "defense": 76,
+    "elo": 1790,
+    "formation": "4231",
+    "style": "physical"
+  },
+  "New Zealand": {
+    "attack": 68,
+    "defense": 69,
+    "elo": 1620,
+    "formation": "442",
+    "style": "physical"
+  },
+  "Cape Verde": {
+    "attack": 72,
+    "defense": 71,
+    "elo": 1700,
+    "formation": "433",
+    "style": "counter"
+  },
+  "Saudi Arabia": {
+    "attack": 74,
+    "defense": 72,
+    "elo": 1720,
+    "formation": "433",
+    "style": "balanced"
+  },
+  "Uruguay": {
+    "attack": 85,
+    "defense": 83,
+    "elo": 1940,
+    "formation": "442",
+    "style": "counter"
+  },
+  "Senegal": {
+    "attack": 82,
+    "defense": 81,
+    "elo": 1900,
+    "formation": "433",
+    "style": "physical"
+  },
+  "Iraq": {
+    "attack": 72,
+    "defense": 71,
+    "elo": 1680,
+    "formation": "4231",
+    "style": "balanced"
+  },
+  "Norway": {
+    "attack": 83,
+    "defense": 78,
+    "elo": 1880,
+    "formation": "433",
+    "style": "counter"
+  },
+  "Algeria": {
+    "attack": 79,
+    "defense": 77,
+    "elo": 1820,
+    "formation": "4231",
+    "style": "possession"
+  },
+  "Austria": {
+    "attack": 81,
+    "defense": 80,
+    "elo": 1880,
+    "formation": "4231",
+    "style": "high_press"
+  },
+  "Jordan": {
+    "attack": 69,
+    "defense": 70,
+    "elo": 1640,
+    "formation": "532",
+    "style": "counter"
+  },
+  "DR Congo": {
+    "attack": 74,
+    "defense": 73,
+    "elo": 1730,
+    "formation": "433",
+    "style": "physical"
+  },
+  "Uzbekistan": {
+    "attack": 71,
+    "defense": 72,
+    "elo": 1670,
+    "formation": "4231",
+    "style": "balanced"
+  },
+  "Colombia": {
+    "attack": 83,
+    "defense": 80,
+    "elo": 1910,
+    "formation": "433",
+    "style": "possession"
+  },
+  "Croatia": {
+    "attack": 84,
+    "defense": 82,
+    "elo": 1920,
+    "formation": "433",
+    "style": "possession"
+  },
+  "Ghana": {
+    "attack": 75,
+    "defense": 73,
+    "elo": 1740,
+    "formation": "433",
+    "style": "physical"
+  },
+  "Panama": {
+    "attack": 71,
+    "defense": 70,
+    "elo": 1660,
+    "formation": "442",
+    "style": "physical"
   }
 }

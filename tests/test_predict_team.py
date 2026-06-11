@@ -1,3 +1,5 @@
+import json
+
 from fastapi.testclient import TestClient
 
 from main import app
@@ -49,3 +51,29 @@ def test_predict_team_manual_weather():
         assert field in data
 
     assert "style_effect" in data["weather"]
+
+
+def test_teams_json_has_48_valid_teams():
+    allowed_styles = {
+        "high_press",
+        "possession",
+        "counter",
+        "physical",
+        "balanced",
+    }
+    required_fields = {
+        "attack",
+        "defense",
+        "elo",
+        "formation",
+        "style",
+    }
+
+    with open("data/teams.json", encoding="utf-8") as file:
+        teams = json.load(file)
+
+    assert len(teams) == 48
+
+    for team in teams.values():
+        assert required_fields.issubset(team)
+        assert team["style"] in allowed_styles
