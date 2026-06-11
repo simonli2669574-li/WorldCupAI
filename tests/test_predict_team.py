@@ -132,3 +132,48 @@ def test_predict_team_returns_standard_team_name_for_alias():
     assert "error" not in data
     assert data["home_team"] == "United States"
     assert data["input_teams"]["home_team"] == "USA"
+
+
+def test_teams_api_returns_all_teams():
+    response = client.get("/teams")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 48
+    assert "name" in data[0]
+    assert "style" in data[0]
+    assert "formation" in data[0]
+
+
+def test_teams_search_api_supports_aliases():
+    response = client.get("/teams/search", params={"q": "usa"})
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data[0]["name"] == "United States"
+    assert data[0]["matched_by"] == "alias"
+
+    response = client.get("/teams/search", params={"q": "USMNT"})
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data[0]["name"] == "United States"
+    assert data[0]["matched_by"] == "alias"
+
+
+def test_teams_search_api_returns_empty_for_no_match_or_blank_query():
+    response = client.get("/teams/search", params={"q": "notarealteam"})
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+    response = client.get("/teams/search", params={"q": "   "})
+
+    assert response.status_code == 200
+    assert response.json() == []

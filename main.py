@@ -12,7 +12,12 @@ from agents.lineup_agent import analyze_lineup
 from agents.injury_agent import analyze_injury
 from agents.ensemble_agent import combine
 from agents.tactics_agent import analyze_tactics
-from agents.team_agent import get_team, resolve_team_name
+from agents.team_agent import (
+    get_team,
+    list_teams,
+    resolve_team_name,
+    search_teams
+)
 from agents.weather_agent import analyze_weather
 from stadium_loader import get_stadium
 from weather_service import get_weather_by_location
@@ -183,6 +188,18 @@ def predict_api(match: MatchInput):
     result = predict(match)
 
     return result
+
+
+@app.get("/teams")
+def teams_api():
+
+    return list_teams()
+
+
+@app.get("/teams/search")
+def search_teams_api(q: str = ""):
+
+    return search_teams(q)
 
 @app.post("/predict_team")
 def predict_team(match: TeamMatchInput):

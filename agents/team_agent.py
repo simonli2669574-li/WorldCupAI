@@ -57,3 +57,69 @@ def get_team(team_name):
         return None
 
     return teams[standard_name]
+
+
+def team_to_response(name, team):
+
+    return {
+        "name": name,
+        "attack": team["attack"],
+        "defense": team["defense"],
+        "elo": team["elo"],
+        "formation": team["formation"],
+        "style": team["style"]
+    }
+
+
+def list_teams():
+
+    teams = load_teams()
+
+    return [
+        team_to_response(name, teams[name])
+        for name in sorted(teams)
+    ]
+
+
+def search_teams(query):
+
+    if query is None:
+        return []
+
+    normalized_query = query.strip().casefold()
+
+    if normalized_query == "":
+        return []
+
+    teams = load_teams()
+    aliases = load_team_aliases()
+    results = {}
+
+    for name, team in teams.items():
+        if normalized_query not in name.casefold():
+            continue
+
+        result = team_to_response(name, team)
+        result["matched_by"] = "name"
+        result["matched_text"] = name
+        results[name] = result
+
+    for alias, standard_name in aliases.items():
+        if normalized_query not in alias.casefold():
+            continue
+
+        if standard_name not in teams:
+            continue
+
+        if standard_name in results:
+            continue
+
+        result = team_to_response(standard_name, teams[standard_name])
+        result["matched_by"] = "alias"
+        result["matched_text"] = alias
+        results[standard_name] = result
+
+    return [
+        results[name]
+        for name in sorted(results)
+    ]
