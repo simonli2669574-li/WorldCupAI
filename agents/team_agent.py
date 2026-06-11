@@ -16,23 +16,23 @@ def load_team_aliases():
         return {}
 
 
-def get_team(team_name):
+def resolve_team_name(team_name):
 
     teams = load_teams()
 
     if team_name in teams:
-        return teams[team_name]
+        return team_name
 
     stripped_team_name = team_name.strip()
 
     if stripped_team_name in teams:
-        return teams[stripped_team_name]
+        return stripped_team_name
 
     normalized_team_name = stripped_team_name.casefold()
 
-    for standard_name, team in teams.items():
+    for standard_name in teams:
         if standard_name.casefold() == normalized_team_name:
-            return team
+            return standard_name
 
     aliases = load_team_aliases()
 
@@ -43,6 +43,17 @@ def get_team(team_name):
         if standard_name not in teams:
             return None
 
-        return teams[standard_name]
+        return standard_name
 
     return None
+
+
+def get_team(team_name):
+
+    teams = load_teams()
+    standard_name = resolve_team_name(team_name)
+
+    if standard_name is None:
+        return None
+
+    return teams[standard_name]

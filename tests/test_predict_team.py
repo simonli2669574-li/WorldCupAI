@@ -2,7 +2,7 @@ import json
 
 from fastapi.testclient import TestClient
 
-from agents.team_agent import get_team
+from agents.team_agent import get_team, resolve_team_name
 from main import app
 
 
@@ -90,3 +90,45 @@ def test_get_team_supports_common_aliases():
     assert get_team("Czechia") is not None
     assert get_team("Holland") is not None
     assert get_team("Not A Real Team") is None
+
+
+def test_resolve_team_name_supports_common_aliases():
+    assert resolve_team_name("USA") == "United States"
+    assert resolve_team_name("USMNT") == "United States"
+    assert resolve_team_name("Czech Republic") == "Czechia"
+    assert resolve_team_name("Not A Real Team") is None
+
+
+def test_predict_team_returns_standard_team_name_for_alias():
+    payload = {
+        "home_team": "USA",
+        "away_team": "Japan",
+        "stadium_key": "Mexico City",
+        "weather_mode": "manual",
+        "open_home_odds": 1.9,
+        "current_home_odds": 1.75,
+        "open_draw_odds": 3.6,
+        "current_draw_odds": 3.8,
+        "open_away_odds": 4.8,
+        "current_away_odds": 5.2,
+        "missing_starters": 2,
+        "star_player_out": 1,
+        "injury_level": 2,
+        "bankroll": 10000,
+        "max_bet_percent": 3,
+        "high_risk_bet_percent": 1,
+        "temperature": 22,
+        "humidity": 50,
+        "wind_speed": 10,
+        "rain": 0,
+    }
+
+    response = client.post("/predict_team", json=payload)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "error" not in data
+    assert data["home_team"] == "United States"
+    assert data["input_teams"]["home_team"] == "USA"

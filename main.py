@@ -12,7 +12,7 @@ from agents.lineup_agent import analyze_lineup
 from agents.injury_agent import analyze_injury
 from agents.ensemble_agent import combine
 from agents.tactics_agent import analyze_tactics
-from agents.team_agent import get_team
+from agents.team_agent import get_team, resolve_team_name
 from agents.weather_agent import analyze_weather
 from stadium_loader import get_stadium
 from weather_service import get_weather_by_location
@@ -186,6 +186,19 @@ def predict_api(match: MatchInput):
 
 @app.post("/predict_team")
 def predict_team(match: TeamMatchInput):
+
+    home_key = resolve_team_name(match.home_team)
+    away_key = resolve_team_name(match.away_team)
+
+    if home_key is None:
+        return {
+            "error": f"找不到球队 {match.home_team}"
+        }
+
+    if away_key is None:
+        return {
+            "error": f"找不到球队 {match.away_team}"
+        }
 
     home = get_team(match.home_team)
     away = get_team(match.away_team)
@@ -413,8 +426,13 @@ def predict_team(match: TeamMatchInput):
     )
 
     return {
-        "home_team": match.home_team,
-        "away_team": match.away_team,
+        "home_team": home_key,
+        "away_team": away_key,
+
+        "input_teams": {
+            "home_team": match.home_team,
+            "away_team": match.away_team
+        },
 
         "stadium": stadium,
 
