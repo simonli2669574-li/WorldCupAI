@@ -57,9 +57,8 @@
 
     .top-bar {
       display: grid;
-      grid-template-columns: 1fr auto;
+      grid-template-columns: 1fr;
       gap: 14px;
-      align-items: center;
       margin-bottom: 20px;
     }
 
@@ -267,7 +266,6 @@
     }
 
     @media (max-width: 880px) {
-      .top-bar,
       .grid,
       form,
       .button-row,
@@ -313,8 +311,8 @@
           </label>
 
           <label>
-            Stadium key
-            <input id="stadium_key" name="stadium_key" value="Mexico City" required>
+            Stadium
+            <select id="stadium_key" name="stadium_key" required></select>
           </label>
 
           <label>
@@ -412,6 +410,7 @@
     ];
 
     let allTeams = [];
+    let allStadiums = [];
 
     const form = document.getElementById("predict-form");
     const healthStatus = document.getElementById("health-status");
@@ -518,14 +517,56 @@
       }
     }
 
+    function populateStadiumSelect(stadiums, preferredKey) {
+      const select = document.getElementById("stadium_key");
+      const currentValue = select.value;
+      const targetValue = preferredKey || currentValue;
+
+      select.innerHTML = "";
+
+      stadiums.forEach((stadium) => {
+        select.add(
+          new Option(
+            `${stadium.key} - ${stadium.stadium}`,
+            stadium.key
+          )
+        );
+      });
+
+      if (stadiums.some((stadium) => stadium.key === targetValue)) {
+        select.value = targetValue;
+      } else if (stadiums.length > 0) {
+        select.value = stadiums[0].key;
+      }
+    }
+
+    async function loadStadiums() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/stadiums`);
+
+        if (!response.ok) {
+          throw new Error(`Stadiums API returned ${response.status}`);
+        }
+
+        allStadiums = await response.json();
+        populateStadiumSelect(allStadiums, "Mexico City");
+      } catch (error) {
+        setStatus(
+          statusBox,
+          "无法加载球场列表，请确认后端 /stadiums 已可用。",
+          "error"
+        );
+      }
+    }
+
     function fillExampleMatch() {
       document.getElementById("home_team_search").value = "";
       document.getElementById("away_team_search").value = "";
 
       populateTeamSelect("home_team", allTeams, "Argentina");
       populateTeamSelect("away_team", allTeams, "Japan");
+      populateStadiumSelect(allStadiums, "Mexico City");
 
-      document.getElementById("stadium_key").value = "Mexico City";
       document.getElementById("weather_mode").value = "manual";
     }
 
@@ -670,6 +711,7 @@
 
     checkHealth();
     loadTeams();
+    loadStadiums();
   </script>
 </body>
 </html>

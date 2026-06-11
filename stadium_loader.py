@@ -20,3 +20,26 @@ def get_stadium(stadium_key):
         return None
 
     return stadiums[stadium_key]
+
+
+def stadium_to_response(key, stadium):
+
+    return {
+        "key": key,
+        "country": stadium["country"],
+        "city": stadium["city"],
+        "stadium": stadium["stadium"],
+        "latitude": stadium["latitude"],
+        "longitude": stadium["longitude"],
+        "altitude": stadium["altitude"]
+    }
+
+
+def list_stadiums():
+
+    stadiums = load_stadiums()
+
+    return [
+        stadium_to_response(key, stadiums[key])
+        for key in sorted(stadiums)
+    ]

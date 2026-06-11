@@ -159,6 +159,31 @@ def test_teams_api_returns_all_teams():
     assert "formation" in data[0]
 
 
+def test_stadiums_api_returns_all_stadiums():
+    response = client.get("/stadiums")
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert len(data) == 16
+
+    required_fields = {
+        "key",
+        "city",
+        "stadium",
+        "altitude",
+    }
+
+    for stadium in data:
+        assert required_fields.issubset(stadium)
+
+    assert any(
+        stadium["key"] == "Mexico City"
+        for stadium in data
+    )
+
+
 def test_teams_search_api_supports_aliases():
     response = client.get("/teams/search", params={"q": "usa"})
 

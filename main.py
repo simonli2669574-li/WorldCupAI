@@ -20,7 +20,7 @@ from agents.team_agent import (
     search_teams
 )
 from agents.weather_agent import analyze_weather
-from stadium_loader import get_stadium
+from stadium_loader import get_stadium, list_stadiums
 from weather_service import get_weather_by_location
 
 APP_VERSION = "6.5"
@@ -226,6 +226,13 @@ def teams_api():
 def search_teams_api(q: str = ""):
 
     return search_teams(q)
+
+
+@app.get("/stadiums")
+def stadiums_api():
+
+    return list_stadiums()
+
 
 @app.post("/predict_team")
 def predict_team(match: TeamMatchInput):
