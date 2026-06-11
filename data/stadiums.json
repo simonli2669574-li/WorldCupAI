@@ -1,0 +1,145 @@
+{
+  "Mexico City": {
+    "country": "Mexico",
+    "city": "Mexico City",
+    "stadium": "Estadio Azteca",
+    "latitude": 19.3029,
+    "longitude": -99.1505,
+    "altitude": 2240
+  },
+
+  "Guadalajara": {
+    "country": "Mexico",
+    "city": "Guadalajara",
+    "stadium": "Estadio Akron",
+    "latitude": 20.6817,
+    "longitude": -103.4631,
+    "altitude": 1566
+  },
+
+  "Monterrey": {
+    "country": "Mexico",
+    "city": "Monterrey",
+    "stadium": "Estadio BBVA",
+    "latitude": 25.6691,
+    "longitude": -100.2446,
+    "altitude": 540
+  },
+
+  "Toronto": {
+    "country": "Canada",
+    "city": "Toronto",
+    "stadium": "BMO Field",
+    "latitude": 43.6331,
+    "longitude": -79.4190,
+    "altitude": 76
+  },
+
+  "Vancouver": {
+    "country": "Canada",
+    "city": "Vancouver",
+    "stadium": "BC Place",
+    "latitude": 49.2767,
+    "longitude": -123.1126,
+    "altitude": 2
+  },
+
+  "Atlanta": {
+    "country": "United States",
+    "city": "Atlanta",
+    "stadium": "Mercedes-Benz Stadium",
+    "latitude": 33.7554,
+    "longitude": -84.4008,
+    "altitude": 320
+  },
+
+  "Boston": {
+    "country": "United States",
+    "city": "Foxborough",
+    "stadium": "Gillette Stadium",
+    "latitude": 42.0909,
+    "longitude": -71.2643,
+    "altitude": 88
+  },
+
+  "Dallas": {
+    "country": "United States",
+    "city": "Arlington",
+    "stadium": "AT&T Stadium",
+    "latitude": 32.7481,
+    "longitude": -97.0932,
+    "altitude": 184
+  },
+
+  "Houston": {
+    "country": "United States",
+    "city": "Houston",
+    "stadium": "NRG Stadium",
+    "latitude": 29.6847,
+    "longitude": -95.4107,
+    "altitude": 13
+  },
+
+  "Kansas City": {
+    "country": "United States",
+    "city": "Kansas City",
+    "stadium": "Arrowhead Stadium",
+    "latitude": 39.0489,
+    "longitude": -94.4844,
+    "altitude": 274
+  },
+
+  "Los Angeles": {
+    "country": "United States",
+    "city": "Inglewood",
+    "stadium": "SoFi Stadium",
+    "latitude": 33.9535,
+    "longitude": -118.3392,
+    "altitude": 38
+  },
+
+  "Miami": {
+    "country": "United States",
+    "city": "Miami Gardens",
+    "stadium": "Hard Rock Stadium",
+    "latitude": 25.9578,
+    "longitude": -80.2393,
+    "altitude": 2
+  },
+
+  "New York New Jersey": {
+    "country": "United States",
+    "city": "East Rutherford",
+    "stadium": "MetLife Stadium",
+    "latitude": 40.8135,
+    "longitude": -74.0745,
+    "altitude": 2
+  },
+
+  "Philadelphia": {
+    "country": "United States",
+    "city": "Philadelphia",
+    "stadium": "Lincoln Financial Field",
+    "latitude": 39.9008,
+    "longitude": -75.1675,
+    "altitude": 12
+  },
+
+  "San Francisco Bay Area": {
+    "country": "United States",
+    "city": "Santa Clara",
+    "stadium": "Levi's Stadium",
+    "latitude": 37.4033,
+    "longitude": -121.9698,
+    "altitude": 3
+  },
+
+  "Seattle": {
+    "country": "United States",
+    "city": "Seattle",
+    "stadium": "Lumen Field",
+    "latitude": 47.5952,
+    "longitude": -122.3316,
+    "altitude": 52
+  }
+}

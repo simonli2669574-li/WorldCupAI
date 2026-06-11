@@ -1,0 +1,272 @@
+\# WorldCupAI
+
+
+
+WorldCupAI is a football match prediction API built with FastAPI.
+
+
+
+The project predicts match outcomes using team data, multi-agent analysis, Monte Carlo simulation, odds value detection, Kelly staking, risk control, stadium data, and weather impact modeling.
+
+
+
+\## Features
+
+
+
+\* Team database prediction
+
+\* Multi-agent match analysis
+
+
+
+&#x20; \* Odds Agent
+
+&#x20; \* Lineup Agent
+
+&#x20; \* Injury Agent
+
+&#x20; \* Tactics Agent
+
+&#x20; \* Weather Agent
+
+\* Stadium database for 2026 World Cup venues
+
+\* Manual and automatic weather mode
+
+\* Weather API integration using Open-Meteo
+
+\* Expected goals adjustment
+
+\* Monte Carlo score simulation
+
+\* Top 3 likely scores
+
+\* Home / Draw / Away probability
+
+\* BTTS and Over 2.5 markets
+
+\* Implied probability and edge calculation
+
+\* Three-way Kelly staking
+
+\* Risk control cap
+
+\* Summary and report generation
+
+
+
+\## Project Structure
+
+
+
+```text
+
+WorldCupAI/
+
+│
+
+├── main.py
+
+├── schemas.py
+
+├── simulation.py
+
+├── kelly.py
+
+├── risk.py
+
+├── market.py
+
+├── report.py
+
+├── weather\_service.py
+
+├── stadium\_loader.py
+
+├── data\_loader.py
+
+├── requirements.txt
+
+│
+
+├── agents/
+
+│   ├── odds\_agent.py
+
+│   ├── lineup\_agent.py
+
+│   ├── injury\_agent.py
+
+│   ├── tactics\_agent.py
+
+│   ├── ensemble\_agent.py
+
+│   ├── team\_agent.py
+
+│   └── weather\_agent.py
+
+│
+
+└── data/
+
+&#x20;   ├── teams.json
+
+&#x20;   └── stadiums.json
+
+```
+
+
+
+\## How to Run
+
+
+
+Activate the virtual environment:
+
+
+
+```powershell
+
+.\\venv\\Scripts\\activate
+
+```
+
+
+
+Install dependencies:
+
+
+
+```powershell
+
+pip install -r requirements.txt
+
+```
+
+
+
+Start the API server:
+
+
+
+```powershell
+
+uvicorn main:app --reload
+
+```
+
+
+
+Open Swagger:
+
+
+
+```text
+
+http://127.0.0.1:8000/docs
+
+```
+
+
+
+\## Example Request
+
+
+
+Endpoint:
+
+
+
+```text
+
+POST /predict\_team
+
+```
+
+
+
+Example JSON:
+
+
+
+```json
+
+{
+
+&#x20; "home\_team": "Argentina",
+
+&#x20; "away\_team": "Japan",
+
+
+
+&#x20; "stadium\_key": "Mexico City",
+
+&#x20; "weather\_mode": "auto",
+
+
+
+&#x20; "open\_home\_odds": 1.9,
+
+&#x20; "current\_home\_odds": 1.75,
+
+
+
+&#x20; "open\_draw\_odds": 3.6,
+
+&#x20; "current\_draw\_odds": 3.8,
+
+
+
+&#x20; "open\_away\_odds": 4.8,
+
+&#x20; "current\_away\_odds": 5.2,
+
+
+
+&#x20; "missing\_starters": 2,
+
+&#x20; "star\_player\_out": 1,
+
+&#x20; "injury\_level": 2,
+
+
+
+&#x20; "bankroll": 10000,
+
+
+
+&#x20; "max\_bet\_percent": 3,
+
+&#x20; "high\_risk\_bet\_percent": 1,
+
+
+
+&#x20; "temperature": 22,
+
+&#x20; "humidity": 50,
+
+&#x20; "wind\_speed": 10,
+
+&#x20; "rain": 0,
+
+&#x20; "altitude": 0
+
+}
+
+```
+
+
+
+\## Important Note
+
+
+
+This project is for football prediction research and software development practice.
+
+
+
+The model output is not a guarantee of profit. Sports betting involves risk. Any staking suggestion should be treated as a simulated model signal, not financial advice.
+
+
+
