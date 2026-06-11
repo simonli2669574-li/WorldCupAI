@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from schemas import MatchInput, TeamMatchInput
 from simulation import simulate
@@ -22,7 +23,22 @@ from agents.weather_agent import analyze_weather
 from stadium_loader import get_stadium
 from weather_service import get_weather_by_location
 
+APP_VERSION = "6.5"
+
 app = FastAPI(title="WorldCupAI 2.2")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # -------------------------
 # 请求结构
@@ -181,6 +197,16 @@ def predict(match: MatchInput):
 # -------------------------
 # API接口
 # -------------------------
+
+@app.get("/health")
+def health_api():
+
+    return {
+        "status": "ok",
+        "service": "WorldCupAI",
+        "version": APP_VERSION
+    }
+
 
 @app.post("/predict")
 def predict_api(match: MatchInput):
