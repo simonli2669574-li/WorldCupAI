@@ -47,3 +47,5 @@ def test_predict_team_manual_weather():
         "report",
     ]:
         assert field in data
+
+    assert "style_effect" in data["weather"]

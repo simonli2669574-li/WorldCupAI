@@ -261,7 +261,9 @@ def predict_team(match: TeamMatchInput):
         weather_input["humidity"],
         weather_input["wind_speed"],
         weather_input["rain"],
-        weather_altitude
+        weather_altitude,
+        home.get("style", "balanced"),
+        away.get("style", "balanced")
     )
 
     weather_result["input"] = weather_input

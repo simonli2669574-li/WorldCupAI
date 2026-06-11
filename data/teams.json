@@ -3,55 +3,63 @@
     "attack": 92,
     "defense": 88,
     "elo": 2100,
-    "formation": "433"
+    "formation": "433",
+    "style": "possession"
   },
 
   "France": {
     "attack": 91,
     "defense": 86,
     "elo": 2080,
-    "formation": "4231"
+    "formation": "4231",
+    "style": "counter"
   },
 
   "Brazil": {
     "attack": 90,
     "defense": 85,
     "elo": 2050,
-    "formation": "433"
+    "formation": "433",
+    "style": "possession"
   },
 
   "England": {
     "attack": 88,
     "defense": 84,
     "elo": 2000,
-    "formation": "4231"
+    "formation": "4231",
+    "style": "physical"
   },
 
   "Spain": {
     "attack": 87,
     "defense": 85,
     "elo": 1980,
-    "formation": "433"
+    "formation": "433",
+    "style": "possession"
   },
 
   "Germany": {
     "attack": 86,
     "defense": 83,
     "elo": 1960,
-    "formation": "4231"
+    "formation": "4231",
+    "style": "high_press"
   },
 
   "Portugal": {
     "attack": 87,
     "defense": 82,
     "elo": 1950,
-    "formation": "433"
+    "formation": "433",
+    "style": "counter"
   },
 
   "Japan": {
     "attack": 79,
     "defense": 80,
     "elo": 1840,
-    "formation": "4231"
+    "formation": "4231",
+    "style": "balanced"
   }
 }
