@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,7 +14,11 @@
       --accent: #0b6bcb;
       --accent-dark: #084f96;
       --danger: #b42318;
+      --danger-bg: #fff1f0;
       --success: #067647;
+      --success-bg: #ecfdf3;
+      --warning-bg: #fffbeb;
+      --warning: #92400e;
     }
 
     * {
@@ -25,7 +29,7 @@
       margin: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Arial, "Microsoft YaHei", sans-serif;
       line-height: 1.5;
     }
 
@@ -51,9 +55,17 @@
       margin: 24px auto 48px;
     }
 
+    .top-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
     .grid {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
       gap: 20px;
       align-items: start;
     }
@@ -66,9 +78,17 @@
       padding: 20px;
     }
 
+    h2,
+    h3 {
+      margin: 0 0 14px;
+    }
+
     h2 {
-      margin: 0 0 16px;
       font-size: 20px;
+    }
+
+    h3 {
+      font-size: 16px;
     }
 
     form {
@@ -107,6 +127,12 @@
       grid-column: 1 / -1;
     }
 
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
     button {
       min-height: 44px;
       border: 0;
@@ -114,12 +140,21 @@
       background: var(--accent);
       color: #ffffff;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
+    }
+
+    button.secondary {
+      background: #e6eef8;
+      color: #0f2f4f;
     }
 
     button:hover {
       background: var(--accent-dark);
+    }
+
+    button.secondary:hover {
+      background: #d6e5f7;
     }
 
     button:disabled {
@@ -128,10 +163,13 @@
     }
 
     .status {
-      margin-top: 14px;
       border-radius: 6px;
       padding: 12px;
       font-size: 14px;
+    }
+
+    #status {
+      margin-top: 14px;
     }
 
     .status.loading {
@@ -141,21 +179,23 @@
     }
 
     .status.error {
-      background: #fff1f0;
+      background: var(--danger-bg);
       color: var(--danger);
       border: 1px solid #ffccc7;
+      font-weight: 700;
     }
 
     .status.success {
-      background: #ecfdf3;
+      background: var(--success-bg);
       color: var(--success);
       border: 1px solid #abefc6;
+      font-weight: 700;
     }
 
     .result-section {
       border-top: 1px solid var(--border);
-      padding-top: 14px;
-      margin-top: 14px;
+      padding-top: 16px;
+      margin-top: 16px;
     }
 
     .result-section:first-child {
@@ -166,20 +206,21 @@
 
     .metric-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 10px;
     }
 
     .metric {
       border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 12px;
+      border-radius: 8px;
+      padding: 14px;
       background: #f8fafc;
     }
 
     .metric strong {
       display: block;
-      font-size: 22px;
+      margin-top: 4px;
+      font-size: 24px;
     }
 
     .metric span,
@@ -209,9 +250,28 @@
       margin: 0;
     }
 
+    .error-box {
+      background: var(--danger-bg);
+      border: 1px solid #ffccc7;
+      border-radius: 8px;
+      color: var(--danger);
+      font-weight: 700;
+      padding: 14px;
+    }
+
+    .disclaimer {
+      margin-top: 20px;
+      background: var(--warning-bg);
+      border-color: #fde68a;
+      color: var(--warning);
+    }
+
     @media (max-width: 880px) {
+      .top-bar,
       .grid,
-      form {
+      form,
+      .button-row,
+      .metric-grid {
         grid-template-columns: 1fr;
       }
     }
@@ -223,93 +283,116 @@
     <p>Simple local frontend for team-based match prediction.</p>
   </header>
 
-  <main class="grid">
-    <section class="card">
-      <h2>Match Input</h2>
-      <form id="predict-form">
-        <label>
-          Home team
-          <select id="home_team" name="home_team" required></select>
-        </label>
+  <main>
+    <div class="top-bar">
+      <div id="health-status" class="status loading" aria-live="polite">正在检查后端连接...</div>
+    </div>
 
-        <label>
-          Away team
-          <select id="away_team" name="away_team" required></select>
-        </label>
+    <div class="grid">
+      <section class="card">
+        <h2>Match Input</h2>
+        <form id="predict-form">
+          <label>
+            Home team search
+            <input id="home_team_search" name="home_team_search" placeholder="Filter home team">
+          </label>
 
-        <label>
-          Stadium key
-          <input id="stadium_key" name="stadium_key" value="Mexico City" required>
-        </label>
+          <label>
+            Away team search
+            <input id="away_team_search" name="away_team_search" placeholder="Filter away team">
+          </label>
 
-        <label>
-          Weather mode
-          <select id="weather_mode" name="weather_mode">
-            <option value="manual" selected>manual</option>
-            <option value="auto">auto</option>
-          </select>
-        </label>
+          <label>
+            Home team
+            <select id="home_team" name="home_team" required></select>
+          </label>
 
-        <label>
-          Open home odds
-          <input id="open_home_odds" name="open_home_odds" type="number" step="0.01" value="1.80">
-        </label>
+          <label>
+            Away team
+            <select id="away_team" name="away_team" required></select>
+          </label>
 
-        <label>
-          Current home odds
-          <input id="current_home_odds" name="current_home_odds" type="number" step="0.01" value="1.75">
-        </label>
+          <label>
+            Stadium key
+            <input id="stadium_key" name="stadium_key" value="Mexico City" required>
+          </label>
 
-        <label>
-          Open draw odds
-          <input id="open_draw_odds" name="open_draw_odds" type="number" step="0.01" value="3.50">
-        </label>
+          <label>
+            Weather mode
+            <select id="weather_mode" name="weather_mode">
+              <option value="manual" selected>manual</option>
+              <option value="auto">auto</option>
+            </select>
+          </label>
 
-        <label>
-          Current draw odds
-          <input id="current_draw_odds" name="current_draw_odds" type="number" step="0.01" value="3.80">
-        </label>
+          <label>
+            Open home odds
+            <input id="open_home_odds" name="open_home_odds" type="number" step="0.01" value="1.80">
+          </label>
 
-        <label>
-          Open away odds
-          <input id="open_away_odds" name="open_away_odds" type="number" step="0.01" value="4.00">
-        </label>
+          <label>
+            Current home odds
+            <input id="current_home_odds" name="current_home_odds" type="number" step="0.01" value="1.75">
+          </label>
 
-        <label>
-          Current away odds
-          <input id="current_away_odds" name="current_away_odds" type="number" step="0.01" value="5.20">
-        </label>
+          <label>
+            Open draw odds
+            <input id="open_draw_odds" name="open_draw_odds" type="number" step="0.01" value="3.50">
+          </label>
 
-        <label>
-          Bankroll
-          <input id="bankroll" name="bankroll" type="number" step="1" value="10000">
-        </label>
+          <label>
+            Current draw odds
+            <input id="current_draw_odds" name="current_draw_odds" type="number" step="0.01" value="3.80">
+          </label>
 
-        <label>
-          Missing starters
-          <input id="missing_starters" name="missing_starters" type="number" step="1" value="0">
-        </label>
+          <label>
+            Open away odds
+            <input id="open_away_odds" name="open_away_odds" type="number" step="0.01" value="4.00">
+          </label>
 
-        <label>
-          Star player out
-          <input id="star_player_out" name="star_player_out" type="number" step="1" value="0">
-        </label>
+          <label>
+            Current away odds
+            <input id="current_away_odds" name="current_away_odds" type="number" step="0.01" value="5.20">
+          </label>
 
-        <label>
-          Injury level
-          <input id="injury_level" name="injury_level" type="number" step="0.1" value="0">
-        </label>
+          <label>
+            Bankroll
+            <input id="bankroll" name="bankroll" type="number" step="1" value="10000">
+          </label>
 
-        <button id="predict-button" class="full" type="submit">Predict</button>
-      </form>
-      <div id="status" aria-live="polite"></div>
-    </section>
+          <label>
+            Missing starters
+            <input id="missing_starters" name="missing_starters" type="number" step="1" value="0">
+          </label>
 
-    <section class="card">
-      <h2>Prediction Result</h2>
-      <div id="results">
-        <p class="empty">Load teams, choose a match, then run a prediction.</p>
-      </div>
+          <label>
+            Star player out
+            <input id="star_player_out" name="star_player_out" type="number" step="1" value="0">
+          </label>
+
+          <label>
+            Injury level
+            <input id="injury_level" name="injury_level" type="number" step="0.1" value="0">
+          </label>
+
+          <div class="full button-row">
+            <button id="example-button" class="secondary" type="button">一键示例比赛</button>
+            <button id="predict-button" type="submit">Predict</button>
+          </div>
+        </form>
+        <div id="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>Prediction Result</h2>
+        <div id="results">
+          <p class="empty">Load teams, choose a match, then run a prediction.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="card disclaimer">
+      本工具仅用于足球数据分析和模型演示，不构成投注或投资建议。预测结果不保证准确，请理性判断并遵守当地法律法规。
     </section>
   </main>
 
@@ -328,14 +411,18 @@
       "injury_level"
     ];
 
+    let allTeams = [];
+
     const form = document.getElementById("predict-form");
+    const healthStatus = document.getElementById("health-status");
     const statusBox = document.getElementById("status");
     const resultsBox = document.getElementById("results");
     const predictButton = document.getElementById("predict-button");
+    const exampleButton = document.getElementById("example-button");
 
-    function setStatus(message, type) {
-      statusBox.className = message ? `status ${type}` : "";
-      statusBox.textContent = message;
+    function setStatus(element, message, type) {
+      element.className = message ? `status ${type}` : "";
+      element.textContent = message;
     }
 
     function escapeHtml(value) {
@@ -351,8 +438,63 @@
       return escapeHtml(JSON.stringify(value ?? null, null, 2));
     }
 
+    async function checkHealth() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/health`);
+
+        if (!response.ok) {
+          throw new Error(`Health API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        setStatus(
+          healthStatus,
+          `后端已连接，版本 ${data.version ?? "unknown"}`,
+          "success"
+        );
+      } catch (error) {
+        setStatus(
+          healthStatus,
+          "后端未连接，请启动 uvicorn main:app --reload",
+          "error"
+        );
+      }
+    }
+
+    function populateTeamSelect(selectId, teams, preferredName) {
+      const select = document.getElementById(selectId);
+      const currentValue = select.value;
+      const targetValue = preferredName || currentValue;
+
+      select.innerHTML = "";
+
+      teams.forEach((team) => {
+        select.add(new Option(team.name, team.name));
+      });
+
+      if (teams.some((team) => team.name === targetValue)) {
+        select.value = targetValue;
+      } else if (teams.length > 0) {
+        select.value = teams[0].name;
+      }
+    }
+
+    function filterTeamSelect(searchInputId, selectId) {
+      const keyword = document
+        .getElementById(searchInputId)
+        .value
+        .trim()
+        .toLowerCase();
+
+      const filteredTeams = keyword
+        ? allTeams.filter((team) => team.name.toLowerCase().includes(keyword))
+        : allTeams;
+
+      populateTeamSelect(selectId, filteredTeams);
+    }
+
     async function loadTeams() {
-      setStatus("Loading teams...", "loading");
+      setStatus(statusBox, "Loading teams...", "loading");
 
       try {
         const response = await fetch(`${API_BASE_URL}/teams`);
@@ -361,27 +503,30 @@
           throw new Error(`Teams API returned ${response.status}`);
         }
 
-        const teams = await response.json();
-        const homeSelect = document.getElementById("home_team");
-        const awaySelect = document.getElementById("away_team");
+        allTeams = await response.json();
 
-        homeSelect.innerHTML = "";
-        awaySelect.innerHTML = "";
+        populateTeamSelect("home_team", allTeams, "Argentina");
+        populateTeamSelect("away_team", allTeams, "Japan");
 
-        teams.forEach((team) => {
-          const homeOption = new Option(team.name, team.name);
-          const awayOption = new Option(team.name, team.name);
-          homeSelect.add(homeOption);
-          awaySelect.add(awayOption);
-        });
-
-        homeSelect.value = teams.find((team) => team.name === "Argentina")?.name || teams[0]?.name || "";
-        awaySelect.value = teams.find((team) => team.name === "Japan")?.name || teams[1]?.name || "";
-
-        setStatus(`Loaded ${teams.length} teams.`, "success");
+        setStatus(statusBox, `Loaded ${allTeams.length} teams.`, "success");
       } catch (error) {
-        setStatus("无法连接后端，请确认 uvicorn main:app --reload 已启动。", "error");
+        setStatus(
+          statusBox,
+          "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
+          "error"
+        );
       }
+    }
+
+    function fillExampleMatch() {
+      document.getElementById("home_team_search").value = "";
+      document.getElementById("away_team_search").value = "";
+
+      populateTeamSelect("home_team", allTeams, "Argentina");
+      populateTeamSelect("away_team", allTeams, "Japan");
+
+      document.getElementById("stadium_key").value = "Mexico City";
+      document.getElementById("weather_mode").value = "manual";
     }
 
     function buildPayload() {
@@ -409,7 +554,7 @@
 
     function renderResults(data) {
       if (data.error) {
-        resultsBox.innerHTML = `<p class="empty">${escapeHtml(data.error)}</p>`;
+        resultsBox.innerHTML = `<div class="error-box">${escapeHtml(data.error)}</div>`;
         return;
       }
 
@@ -424,15 +569,15 @@
           <p class="muted">Input: ${escapeHtml(data.input_teams?.home_team)} vs ${escapeHtml(data.input_teams?.away_team)}</p>
           <div class="metric-grid">
             <div class="metric">
-              <span>Home win</span>
+              <span>主胜</span>
               <strong>${escapeHtml(data.home_win)}%</strong>
             </div>
             <div class="metric">
-              <span>Draw</span>
+              <span>平局</span>
               <strong>${escapeHtml(data.draw)}%</strong>
             </div>
             <div class="metric">
-              <span>Away win</span>
+              <span>客胜</span>
               <strong>${escapeHtml(data.away_win)}%</strong>
             </div>
           </div>
@@ -478,7 +623,7 @@
     async function submitPrediction(event) {
       event.preventDefault();
       predictButton.disabled = true;
-      setStatus("Running prediction...", "loading");
+      setStatus(statusBox, "Running prediction...", "loading");
 
       try {
         const response = await fetch(`${API_BASE_URL}/predict_team`, {
@@ -497,18 +642,33 @@
         renderResults(data);
 
         if (data.error) {
-          setStatus(data.error, "error");
+          setStatus(statusBox, data.error, "error");
         } else {
-          setStatus("Prediction complete.", "success");
+          setStatus(statusBox, "Prediction complete.", "success");
         }
       } catch (error) {
-        setStatus("无法连接后端，请确认 uvicorn main:app --reload 已启动。", "error");
+        setStatus(
+          statusBox,
+          "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
+          "error"
+        );
       } finally {
         predictButton.disabled = false;
       }
     }
 
+    document
+      .getElementById("home_team_search")
+      .addEventListener("input", () => filterTeamSelect("home_team_search", "home_team"));
+
+    document
+      .getElementById("away_team_search")
+      .addEventListener("input", () => filterTeamSelect("away_team_search", "away_team"));
+
+    exampleButton.addEventListener("click", fillExampleMatch);
     form.addEventListener("submit", submitPrediction);
+
+    checkHealth();
     loadTeams();
   </script>
 </body>
