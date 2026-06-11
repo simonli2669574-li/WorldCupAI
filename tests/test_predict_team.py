@@ -2,6 +2,7 @@ import json
 
 from fastapi.testclient import TestClient
 
+from agents.team_agent import get_team
 from main import app
 
 
@@ -77,3 +78,15 @@ def test_teams_json_has_48_valid_teams():
     for team in teams.values():
         assert required_fields.issubset(team)
         assert team["style"] in allowed_styles
+
+
+def test_get_team_supports_common_aliases():
+    assert get_team("USA") is not None
+    assert get_team("USMNT") is not None
+    assert get_team("United States of America") is not None
+    assert get_team("Korea Republic") is not None
+    assert get_team("South Korea") is not None
+    assert get_team("Czech Republic") is not None
+    assert get_team("Czechia") is not None
+    assert get_team("Holland") is not None
+    assert get_team("Not A Real Team") is None
