@@ -57,9 +57,25 @@
 
     .top-bar {
       display: grid;
-      grid-template-columns: 1fr;
       gap: 14px;
       margin-bottom: 20px;
+    }
+
+    .api-config {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .api-config label {
+      margin: 0;
+    }
+
+    .current-api {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
     }
 
     .grid {
@@ -141,6 +157,7 @@
       cursor: pointer;
       font-size: 15px;
       font-weight: 700;
+      padding: 0 16px;
     }
 
     button.secondary {
@@ -266,6 +283,7 @@
     }
 
     @media (max-width: 880px) {
+      .api-config,
       .grid,
       form,
       .button-row,
@@ -283,6 +301,18 @@
 
   <main>
     <div class="top-bar">
+      <section class="card">
+        <h2>Backend API URL</h2>
+        <div class="api-config">
+          <label>
+            API address
+            <input id="api_base_url" value="http://127.0.0.1:8000">
+          </label>
+          <button id="save-api-button" type="button">保存 API 地址</button>
+        </div>
+        <div id="current-api-url" class="current-api"></div>
+      </section>
+
       <div id="health-status" class="status loading" aria-live="polite">正在检查后端连接...</div>
     </div>
 
@@ -395,7 +425,10 @@
   </main>
 
   <script>
-    const API_BASE_URL = "http://127.0.0.1:8000";
+    const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
+    const API_STORAGE_KEY = "worldcupai_api_base_url";
+    let apiBaseUrl = getStoredApiBaseUrl();
+
     const numberFields = [
       "open_home_odds",
       "current_home_odds",
@@ -413,11 +446,43 @@
     let allStadiums = [];
 
     const form = document.getElementById("predict-form");
+    const apiInput = document.getElementById("api_base_url");
+    const currentApiUrl = document.getElementById("current-api-url");
     const healthStatus = document.getElementById("health-status");
     const statusBox = document.getElementById("status");
     const resultsBox = document.getElementById("results");
     const predictButton = document.getElementById("predict-button");
     const exampleButton = document.getElementById("example-button");
+    const saveApiButton = document.getElementById("save-api-button");
+
+    function normalizeApiBaseUrl(value) {
+      const trimmed = String(value ?? "").trim();
+      const fallback = trimmed || DEFAULT_API_BASE_URL;
+
+      return fallback.replace(/\/+$/, "");
+    }
+
+    function getStoredApiBaseUrl() {
+      return normalizeApiBaseUrl(localStorage.getItem(API_STORAGE_KEY));
+    }
+
+    function updateApiDisplay() {
+      apiInput.value = apiBaseUrl;
+      currentApiUrl.textContent = `当前正在使用：${apiBaseUrl}`;
+    }
+
+    function saveApiBaseUrl() {
+      apiBaseUrl = normalizeApiBaseUrl(apiInput.value);
+      localStorage.setItem(API_STORAGE_KEY, apiBaseUrl);
+      updateApiDisplay();
+      checkHealth();
+      loadTeams();
+      loadStadiums();
+    }
+
+    function apiUrl(path) {
+      return `${apiBaseUrl}${path}`;
+    }
 
     function setStatus(element, message, type) {
       element.className = message ? `status ${type}` : "";
@@ -439,7 +504,7 @@
 
     async function checkHealth() {
       try {
-        const response = await fetch(`${API_BASE_URL}/health`);
+        const response = await fetch(apiUrl("/health"));
 
         if (!response.ok) {
           throw new Error(`Health API returned ${response.status}`);
@@ -496,7 +561,7 @@
       setStatus(statusBox, "Loading teams...", "loading");
 
       try {
-        const response = await fetch(`${API_BASE_URL}/teams`);
+        const response = await fetch(apiUrl("/teams"));
 
         if (!response.ok) {
           throw new Error(`Teams API returned ${response.status}`);
@@ -509,6 +574,9 @@
 
         setStatus(statusBox, `Loaded ${allTeams.length} teams.`, "success");
       } catch (error) {
+        allTeams = [];
+        populateTeamSelect("home_team", allTeams);
+        populateTeamSelect("away_team", allTeams);
         setStatus(
           statusBox,
           "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
@@ -542,7 +610,7 @@
 
     async function loadStadiums() {
       try {
-        const response = await fetch(`${API_BASE_URL}/stadiums`);
+        const response = await fetch(apiUrl("/stadiums"));
 
         if (!response.ok) {
           throw new Error(`Stadiums API returned ${response.status}`);
@@ -551,6 +619,8 @@
         allStadiums = await response.json();
         populateStadiumSelect(allStadiums, "Mexico City");
       } catch (error) {
+        allStadiums = [];
+        populateStadiumSelect(allStadiums);
         setStatus(
           statusBox,
           "无法加载球场列表，请确认后端 /stadiums 已可用。",
@@ -667,7 +737,7 @@
       setStatus(statusBox, "Running prediction...", "loading");
 
       try {
-        const response = await fetch(`${API_BASE_URL}/predict_team`, {
+        const response = await fetch(apiUrl("/predict_team"), {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
@@ -706,9 +776,11 @@
       .getElementById("away_team_search")
       .addEventListener("input", () => filterTeamSelect("away_team_search", "away_team"));
 
+    saveApiButton.addEventListener("click", saveApiBaseUrl);
     exampleButton.addEventListener("click", fillExampleMatch);
     form.addEventListener("submit", submitPrediction);
 
+    updateApiDisplay();
     checkHealth();
     loadTeams();
     loadStadiums();

@@ -270,3 +270,50 @@ The model output is not a guarantee of profit. Sports betting involves risk. Any
 
 
 
+## Local Demo
+
+Activate the virtual environment:
+
+```powershell
+.\venv\Scripts\activate
+```
+
+Install dependencies:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Start the backend:
+
+```powershell
+uvicorn main:app --reload
+```
+
+Start the frontend static server in another terminal:
+
+```powershell
+python -m http.server 5173 -d frontend
+```
+
+Open the frontend:
+
+```text
+http://127.0.0.1:5173
+```
+
+Check the backend health endpoint:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+### Common Issues
+
+1. If the page says the backend is not connected, confirm that `uvicorn main:app --reload` is running and that `http://127.0.0.1:8000/health` returns `status: ok`.
+
+2. To change the frontend Backend API URL, edit the `Backend API URL` field at the top of the page and click the save button.
+
+3. If the API URL is wrong, change it back to `http://127.0.0.1:8000` and save again. The page will reload health, teams, and stadiums from the corrected backend.
+
+
