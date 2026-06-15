@@ -172,6 +172,52 @@
       gap: 10px;
     }
 
+    .dataset-info-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      padding: 14px;
+    }
+
+    .dataset-info-card h3 {
+      margin: 0 0 12px;
+      font-size: 16px;
+    }
+
+    .dataset-info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .dataset-info-item {
+      min-width: 0;
+    }
+
+    .dataset-info-label {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dataset-info-value {
+      display: block;
+      margin-top: 4px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    .dataset-info-note {
+      grid-column: 1 / -1;
+      margin-top: 2px;
+      padding: 10px 12px;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      background: var(--accent-soft);
+      color: #1e3a8a;
+      line-height: 1.5;
+    }
+
     .table-wrap {
       overflow-x: auto;
       border: 1px solid var(--border);
@@ -543,6 +589,7 @@
       .button-row,
       .metric-grid,
       .backtest-summary-grid,
+      .dataset-info-grid,
       .detail-grid {
         grid-template-columns: 1fr;
       }
@@ -1133,6 +1180,14 @@
     function renderBacktest(data) {
       const summary = data.summary ?? {};
       const details = Array.isArray(data.details) ? data.details : [];
+      const datasetSource = summary.dataset_source || "Unknown";
+      const sampleSize = summary.sample_size === undefined || summary.sample_size === null || summary.sample_size === ""
+        ? valueOrDash(summary.matches_tested)
+        : summary.sample_size;
+      const competitions = Array.isArray(summary.competitions) && summary.competitions.length
+        ? summary.competitions.filter((item) => item !== undefined && item !== null && item !== "").join(", ") || "-"
+        : "-";
+      const datasetNote = summary.dataset_note || "No dataset note provided.";
       const detailRows = details.length
         ? details.map((item) => `
             <tr>
@@ -1175,6 +1230,28 @@
             <strong>${escapeHtml(formatPercent(summary.over25_accuracy))}</strong>
           </div>
         </div>
+
+        <section class="dataset-info-card" aria-labelledby="dataset-info-title">
+          <h3 id="dataset-info-title">Dataset Information</h3>
+          <div class="dataset-info-grid">
+            <div class="dataset-info-item">
+              <span class="dataset-info-label">Dataset Source</span>
+              <span class="dataset-info-value">${escapeHtml(datasetSource)}</span>
+            </div>
+            <div class="dataset-info-item">
+              <span class="dataset-info-label">Sample Size</span>
+              <span class="dataset-info-value">${escapeHtml(sampleSize)}</span>
+            </div>
+            <div class="dataset-info-item">
+              <span class="dataset-info-label">Competitions</span>
+              <span class="dataset-info-value">${escapeHtml(competitions)}</span>
+            </div>
+            <div class="dataset-info-note">
+              <span class="dataset-info-label">Note</span>
+              <span class="dataset-info-value">${escapeHtml(datasetNote)}</span>
+            </div>
+          </div>
+        </section>
 
         <div class="table-wrap">
           <table>
