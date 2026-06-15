@@ -308,6 +308,21 @@ Check the backend health endpoint:
 http://127.0.0.1:8000/health
 ```
 
+## Backtesting
+
+Run the local backtesting framework through:
+
+```text
+GET /backtest
+```
+
+The current backtest dataset is stored in `data/backtest_matches.json`.
+These records are synthetic sample fixtures, not an official historical match
+database. They are intended to validate the backtest framework, API response
+shape, and model iteration workflow. A later version can replace this fixture
+file with real historical match data without changing the local backtest
+workflow.
+
 ### Common Issues
 
 1. If the page says the backend is not connected, confirm that `uvicorn main:app --reload` is running and that `http://127.0.0.1:8000/health` returns `status: ok`.

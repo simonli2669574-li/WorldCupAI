@@ -16,6 +16,10 @@ def test_backtest_api_returns_summary_and_details():
     summary = data["summary"]
 
     assert summary["matches_tested"] > 0
+    assert "dataset_source" in summary
+    assert "dataset_note" in summary
+    assert "sample_size" in summary
+    assert "competitions" in summary
 
     for field in [
         "winner_accuracy",
@@ -30,6 +34,11 @@ def test_backtest_api_returns_summary_and_details():
     first_detail = data["details"][0]
 
     for field in [
+        "match_id",
+        "source",
+        "competition",
+        "match_date",
+        "neutral_site",
         "actual_score",
         "actual_winner",
         "predicted_winner",

@@ -3,6 +3,23 @@ import json
 from schemas import TeamMatchInput
 
 
+BACKTEST_DATASET_NOTE = (
+    "Synthetic sample fixtures for framework validation; "
+    "not official historical results."
+)
+
+EXCLUDED_PREDICTION_FIELDS = {
+    "actual_home_goals",
+    "actual_away_goals",
+    "match_id",
+    "source",
+    "competition",
+    "match_date",
+    "neutral_site",
+    "notes",
+}
+
+
 def load_backtest_matches(path="data/backtest_matches.json"):
 
     with open(path, "r", encoding="utf-8") as file:
@@ -36,10 +53,7 @@ def evaluate_match(sample):
     prediction_input = {
         key: value
         for key, value in sample.items()
-        if key not in {
-            "actual_home_goals",
-            "actual_away_goals"
-        }
+        if key not in EXCLUDED_PREDICTION_FIELDS
     }
 
     match = TeamMatchInput(**prediction_input)
@@ -71,6 +85,11 @@ def evaluate_match(sample):
     predicted_over25 = prediction["markets"]["Over2.5"] >= 50
 
     return {
+        "match_id": sample.get("match_id"),
+        "source": sample.get("source"),
+        "competition": sample.get("competition"),
+        "match_date": sample.get("match_date"),
+        "neutral_site": sample.get("neutral_site"),
         "home_team": sample["home_team"],
         "away_team": sample["away_team"],
         "actual_score": actual_score,
@@ -105,6 +124,17 @@ def calculate_accuracy(details, field):
 def run_backtest():
 
     samples = load_backtest_matches()
+    competitions = sorted({
+        sample["competition"]
+        for sample in samples
+        if sample.get("competition")
+    })
+    sources = sorted({
+        sample["source"]
+        for sample in samples
+        if sample.get("source")
+    })
+    dataset_source = sources[0] if len(sources) == 1 else sources
 
     details = [
         evaluate_match(sample)
@@ -114,6 +144,10 @@ def run_backtest():
     return {
         "summary": {
             "matches_tested": len(details),
+            "sample_size": len(samples),
+            "dataset_source": dataset_source,
+            "dataset_note": BACKTEST_DATASET_NOTE,
+            "competitions": competitions,
             "winner_accuracy": calculate_accuracy(details, "winner_hit"),
             "top_score_hit_rate": calculate_accuracy(details, "top_score_hit"),
             "btts_accuracy": calculate_accuracy(details, "btts_hit"),
