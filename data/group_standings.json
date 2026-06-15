@@ -1,0 +1,38 @@
+{
+  "Group C": {
+    "teams": [
+      {
+        "team": "Brazil",
+        "played": 2,
+        "points": 6,
+        "goals_for": 4,
+        "goals_against": 1,
+        "goal_difference": 3
+      },
+      {
+        "team": "Japan",
+        "played": 2,
+        "points": 4,
+        "goals_for": 3,
+        "goals_against": 2,
+        "goal_difference": 1
+      },
+      {
+        "team": "Germany",
+        "played": 2,
+        "points": 3,
+        "goals_for": 2,
+        "goals_against": 2,
+        "goal_difference": 0
+      },
+      {
+        "team": "United States",
+        "played": 2,
+        "points": 1,
+        "goals_for": 1,
+        "goals_against": 5,
+        "goal_difference": -4
+      }
+    ]
+  }
+}

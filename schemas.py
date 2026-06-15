@@ -27,6 +27,10 @@ class TeamMatchInput(BaseModel):
     home_team: str
     away_team: str
 
+    group: str | None = None
+    group_match_number: int = 1
+    auto_context: bool = True
+
     stadium_key: str = "Mexico City"
     weather_mode: str = "manual"
 

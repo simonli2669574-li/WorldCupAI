@@ -7,6 +7,7 @@ from kelly import calculate_three_way_kelly
 from risk import apply_risk_control
 from market import calculate_market_edges
 from report import generate_value_summary, generate_report
+from match_context import build_match_context_effect, apply_context_xg
 
 from agents.odds_agent import analyze_odds
 from agents.lineup_agent import analyze_lineup
@@ -380,6 +381,23 @@ def run_team_prediction(match: TeamMatchInput):
     home_xg = max(0.2, home_xg)
     away_xg = max(0.2, away_xg)
 
+    context_effect = {
+        "enabled": False
+    }
+
+    if match.auto_context is True and match.group:
+        context_effect = build_match_context_effect(
+            home_key,
+            away_key,
+            match.group,
+            match.group_match_number
+        )
+        home_xg, away_xg = apply_context_xg(
+            home_xg,
+            away_xg,
+            context_effect
+        )
+
     N = 5000
 
     home_win = 0
@@ -506,6 +524,8 @@ def run_team_prediction(match: TeamMatchInput):
         },
 
         "weather": weather_result,
+
+        "context_effect": context_effect,
 
         "market_edges": market_edges,
 
