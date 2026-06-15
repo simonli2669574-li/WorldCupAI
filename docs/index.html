@@ -140,6 +140,72 @@
       gap: 14px;
     }
 
+    .backtest-dashboard {
+      margin-top: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .backtest-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: start;
+    }
+
+    .backtest-header p {
+      margin: 0;
+    }
+
+    .backtest-body {
+      display: grid;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .backtest-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 860px;
+      background: #ffffff;
+    }
+
+    th,
+    td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--surface-soft);
+      color: #334155;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
     .panel-title {
       display: flex;
       justify-content: space-between;
@@ -386,6 +452,23 @@
       font-weight: 700;
     }
 
+    .backtest-error {
+      background: var(--red-soft);
+      border: 1px solid #ffccc7;
+      border-radius: 8px;
+      color: var(--red);
+      padding: 14px;
+    }
+
+    .backtest-error h3 {
+      color: var(--red);
+      margin-bottom: 6px;
+    }
+
+    .backtest-error p {
+      margin: 0;
+    }
+
     .disclaimer {
       margin-top: 20px;
       background: var(--amber-soft);
@@ -456,8 +539,10 @@
       .workspace-grid,
       form,
       .api-config,
+      .backtest-header,
       .button-row,
       .metric-grid,
+      .backtest-summary-grid,
       .detail-grid {
         grid-template-columns: 1fr;
       }
@@ -613,6 +698,18 @@
       </section>
     </div>
 
+    <section class="backtest-dashboard" aria-labelledby="backtest-title">
+      <div class="backtest-header">
+        <div>
+          <h2 id="backtest-title">Model Backtest</h2>
+          <p class="muted">Evaluate the current prediction model using local sample matches.</p>
+        </div>
+        <button id="backtest-button" type="button">Run Backtest</button>
+      </div>
+      <div id="backtest-status" aria-live="polite"></div>
+      <div id="backtest-results" class="backtest-body"></div>
+    </section>
+
     <section class="card disclaimer">
       This tool is for football data analysis and model demonstration only. It is not betting or investment advice. Prediction results are not guaranteed. Please use rational judgment and follow local laws and regulations.
     </section>
@@ -674,6 +771,9 @@
     const resetButton = document.getElementById("reset-button");
     const saveApiButton = document.getElementById("save-api-button");
     const loadingOverlay = document.getElementById("loading-overlay");
+    const backtestButton = document.getElementById("backtest-button");
+    const backtestStatus = document.getElementById("backtest-status");
+    const backtestResults = document.getElementById("backtest-results");
 
     function normalizeApiBaseUrl(value) {
       const trimmed = String(value ?? "").trim();
@@ -750,6 +850,20 @@
       }
 
       return value;
+    }
+
+    function formatPercent(value) {
+      const number = Number(value);
+
+      if (!Number.isFinite(number)) {
+        return "-";
+      }
+
+      return `${number.toFixed(2)}%`;
+    }
+
+    function formatBooleanHit(value) {
+      return value ? "✅" : "❌";
     }
 
     async function checkHealth() {
@@ -1007,6 +1121,108 @@
       `;
     }
 
+    function renderBacktestError() {
+      backtestResults.innerHTML = `
+        <section class="backtest-error" role="alert">
+          <h3>Backtest Failed</h3>
+          <p>Please check backend connection or /backtest endpoint.</p>
+        </section>
+      `;
+    }
+
+    function renderBacktest(data) {
+      const summary = data.summary ?? {};
+      const details = Array.isArray(data.details) ? data.details : [];
+      const detailRows = details.length
+        ? details.map((item) => `
+            <tr>
+              <td>${escapeHtml(valueOrDash(item.home_team))} vs ${escapeHtml(valueOrDash(item.away_team))}</td>
+              <td>${escapeHtml(valueOrDash(item.actual_score))}</td>
+              <td>${escapeHtml(valueOrDash(item.actual_winner))}</td>
+              <td>${escapeHtml(valueOrDash(item.predicted_winner))}</td>
+              <td>${formatBooleanHit(item.winner_hit)}</td>
+              <td>${formatBooleanHit(item.top_score_hit)}</td>
+              <td>${formatBooleanHit(item.btts_hit)}</td>
+              <td>${formatBooleanHit(item.over25_hit)}</td>
+            </tr>
+          `).join("")
+        : `
+            <tr>
+              <td colspan="8">No backtest details returned.</td>
+            </tr>
+          `;
+
+      backtestResults.innerHTML = `
+        <div class="backtest-summary-grid">
+          <div class="metric">
+            <span>Matches Tested</span>
+            <strong>${escapeHtml(valueOrDash(summary.matches_tested))}</strong>
+          </div>
+          <div class="metric">
+            <span>Winner Accuracy</span>
+            <strong>${escapeHtml(formatPercent(summary.winner_accuracy))}</strong>
+          </div>
+          <div class="metric">
+            <span>Top Score Hit Rate</span>
+            <strong>${escapeHtml(formatPercent(summary.top_score_hit_rate))}</strong>
+          </div>
+          <div class="metric">
+            <span>BTTS Accuracy</span>
+            <strong>${escapeHtml(formatPercent(summary.btts_accuracy))}</strong>
+          </div>
+          <div class="metric">
+            <span>Over 2.5 Accuracy</span>
+            <strong>${escapeHtml(formatPercent(summary.over25_accuracy))}</strong>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Match</th>
+                <th>Actual Score</th>
+                <th>Actual Winner</th>
+                <th>Predicted Winner</th>
+                <th>Winner Hit</th>
+                <th>Top Score Hit</th>
+                <th>BTTS Hit</th>
+                <th>Over2.5 Hit</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${detailRows}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    async function runBacktest() {
+      backtestButton.disabled = true;
+      backtestButton.textContent = "Running...";
+      backtestResults.innerHTML = "";
+      setStatus(backtestStatus, "Running backtest...", "loading");
+
+      try {
+        const response = await fetch(apiUrl("/backtest"));
+
+        if (!response.ok) {
+          throw new Error(`Backtest API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderBacktest(data);
+        setStatus(backtestStatus, "", "");
+      } catch (error) {
+        renderBacktestError();
+        setStatus(backtestStatus, "", "");
+      } finally {
+        backtestButton.disabled = false;
+        backtestButton.textContent = "Run Backtest";
+      }
+    }
+
     async function submitPrediction(event) {
       event.preventDefault();
       saveFormState();
@@ -1056,6 +1272,7 @@
     saveApiButton.addEventListener("click", saveApiBaseUrl);
     exampleButton.addEventListener("click", fillExampleMatch);
     resetButton.addEventListener("click", resetForm);
+    backtestButton.addEventListener("click", runBacktest);
     form.addEventListener("submit", submitPrediction);
 
     updateApiDisplay();
