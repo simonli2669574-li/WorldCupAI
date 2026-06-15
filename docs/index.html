@@ -3,28 +3,33 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WorldCupAI MVP</title>
+  <title>WorldCupAI v8.3</title>
   <style>
     :root {
-      --bg: #f4f6f8;
-      --card: #ffffff;
-      --text: #17202a;
-      --muted: #627084;
-      --border: #d9e0e8;
-      --accent: #0b6bcb;
-      --accent-dark: #084f96;
-      --danger: #b42318;
-      --danger-bg: #fff1f0;
-      --success: #067647;
-      --success-bg: #ecfdf3;
-      --warning-bg: #fffbeb;
-      --warning: #92400e;
-      --info-bg: #eef6ff;
-      --info: #064b84;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --surface-soft: #f8fafc;
+      --text: #111827;
+      --muted: #64748b;
+      --border: #dbe3ee;
+      --accent: #2563eb;
+      --accent-dark: #1d4ed8;
+      --accent-soft: #eff6ff;
+      --green: #047857;
+      --green-soft: #ecfdf5;
+      --amber: #b45309;
+      --amber-soft: #fffbeb;
+      --red: #b42318;
+      --red-soft: #fff1f0;
+      --shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
     }
 
     body {
@@ -36,31 +41,63 @@
     }
 
     header {
-      background: #111827;
+      background: #0f172a;
       color: #ffffff;
-      padding: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header-inner {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
     }
 
     header h1 {
       margin: 0;
-      font-size: 28px;
-      font-weight: 700;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0;
     }
 
     header p {
-      margin: 6px 0 0;
+      margin: 4px 0 0;
       color: #cbd5e1;
+      font-size: 14px;
+    }
+
+    .version-tag {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      color: #dbeafe;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 12px;
+      white-space: nowrap;
     }
 
     main {
-      width: min(1180px, calc(100% - 32px));
+      width: min(1240px, calc(100% - 32px));
       margin: 24px auto 48px;
     }
 
     .top-bar {
       display: grid;
-      gap: 14px;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: 16px;
       margin-bottom: 20px;
+    }
+
+    .card,
+    .result-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 20px;
     }
 
     .api-config {
@@ -70,43 +107,45 @@
       align-items: end;
     }
 
-    .api-config label {
-      margin: 0;
-    }
-
     .current-api {
       color: var(--muted);
       font-size: 13px;
       margin-top: 8px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
-      gap: 20px;
-      align-items: start;
-    }
-
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      padding: 20px;
+      word-break: break-all;
     }
 
     .demo-note {
-      background: var(--info-bg);
-      border-color: #b8dcff;
-      color: var(--info);
+      background: var(--accent-soft);
+      border-color: #bfdbfe;
+      color: #1e3a8a;
     }
 
     .demo-note code {
       display: inline-block;
       margin-top: 6px;
-      color: #04385f;
+      color: #172554;
       font-size: 14px;
       word-break: break-all;
+    }
+
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: minmax(360px, 0.78fr) minmax(0, 1.22fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .results-panel {
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin: 0;
     }
 
     h2,
@@ -116,10 +155,12 @@
 
     h2 {
       font-size: 20px;
+      line-height: 1.25;
     }
 
     h3 {
       font-size: 16px;
+      line-height: 1.3;
     }
 
     form {
@@ -139,19 +180,19 @@
     input,
     select {
       width: 100%;
-      min-height: 40px;
+      min-height: 42px;
       border: 1px solid var(--border);
       border-radius: 6px;
       color: var(--text);
       background: #ffffff;
-      padding: 8px 10px;
+      padding: 9px 10px;
       font-size: 15px;
     }
 
     input:focus,
     select:focus {
       border-color: var(--accent);
-      outline: 2px solid rgba(11, 107, 203, 0.14);
+      outline: 3px solid rgba(37, 99, 235, 0.14);
     }
 
     .full {
@@ -160,7 +201,7 @@
 
     .button-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 12px;
     }
 
@@ -172,68 +213,95 @@
       color: #ffffff;
       cursor: pointer;
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       padding: 0 16px;
-    }
-
-    button.secondary {
-      background: #e6eef8;
-      color: #0f2f4f;
     }
 
     button:hover {
       background: var(--accent-dark);
     }
 
+    button.secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
     button.secondary:hover {
-      background: #d6e5f7;
+      background: #cbd5e1;
+    }
+
+    button.ghost {
+      background: #ffffff;
+      color: #334155;
+      border: 1px solid var(--border);
+    }
+
+    button.ghost:hover {
+      background: #f8fafc;
     }
 
     button:disabled {
       cursor: wait;
-      opacity: 0.65;
+      opacity: 0.68;
     }
 
     .status {
-      border-radius: 6px;
-      padding: 12px;
+      border-radius: 8px;
+      padding: 12px 14px;
       font-size: 14px;
+      border: 1px solid transparent;
     }
 
     #status {
       margin-top: 14px;
     }
 
+    #health-status {
+      margin: 0 0 20px;
+    }
+
     .status.loading {
-      background: #eef6ff;
-      color: #064b84;
-      border: 1px solid #b8dcff;
+      background: var(--accent-soft);
+      color: #1d4ed8;
+      border-color: #bfdbfe;
     }
 
     .status.error {
-      background: var(--danger-bg);
-      color: var(--danger);
-      border: 1px solid #ffccc7;
+      background: var(--red-soft);
+      color: var(--red);
+      border-color: #ffccc7;
       font-weight: 700;
     }
 
     .status.success {
-      background: var(--success-bg);
-      color: var(--success);
-      border: 1px solid #abefc6;
+      background: var(--green-soft);
+      color: var(--green);
+      border-color: #a7f3d0;
       font-weight: 700;
     }
 
-    .result-section {
-      border-top: 1px solid var(--border);
-      padding-top: 16px;
-      margin-top: 16px;
+    .result-card-grid {
+      display: grid;
+      gap: 14px;
     }
 
-    .result-section:first-child {
-      border-top: 0;
-      padding-top: 0;
-      margin-top: 0;
+    .result-card h3 {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .muted,
+    .metric span,
+    .detail-label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .empty {
+      color: var(--muted);
+      margin: 0;
     }
 
     .metric-grid {
@@ -246,19 +314,36 @@
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 14px;
-      background: #f8fafc;
+      background: var(--surface-soft);
+      min-width: 0;
     }
 
     .metric strong {
       display: block;
       margin-top: 4px;
-      font-size: 24px;
+      font-size: 26px;
+      line-height: 1.1;
     }
 
-    .metric span,
-    .muted {
-      color: var(--muted);
-      font-size: 13px;
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      padding: 12px;
+      min-width: 0;
+    }
+
+    .detail-value {
+      display: block;
+      margin-top: 3px;
+      font-weight: 800;
+      word-break: break-word;
     }
 
     ul {
@@ -266,53 +351,133 @@
       padding-left: 18px;
     }
 
+    li + li {
+      margin-top: 6px;
+    }
+
     pre {
       overflow: auto;
       white-space: pre-wrap;
       word-break: break-word;
-      background: #f8fafc;
+      background: var(--surface-soft);
       border: 1px solid var(--border);
-      border-radius: 6px;
+      border-radius: 8px;
       padding: 12px;
       font-size: 13px;
-    }
-
-    .empty {
-      color: var(--muted);
       margin: 0;
     }
 
     .error-box {
-      background: var(--danger-bg);
-      border: 1px solid #ffccc7;
-      border-radius: 8px;
-      color: var(--danger);
+      background: var(--red-soft);
+      border-color: #ffccc7;
+      color: var(--red);
+    }
+
+    .error-box h3 {
+      color: var(--red);
+    }
+
+    .error-box p {
+      margin: 8px 0 0;
+    }
+
+    .error-detail {
+      color: #7a271a;
       font-weight: 700;
-      padding: 14px;
     }
 
     .disclaimer {
       margin-top: 20px;
-      background: var(--warning-bg);
+      background: var(--amber-soft);
       border-color: #fde68a;
-      color: var(--warning);
+      color: var(--amber);
+      box-shadow: none;
     }
 
-    @media (max-width: 880px) {
-      .api-config,
-      .grid,
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: grid;
+      place-items: center;
+      background: rgba(15, 23, 42, 0.56);
+      padding: 24px;
+    }
+
+    .loading-card {
+      width: min(420px, 100%);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+      padding: 24px;
+    }
+
+    .spinner {
+      width: 34px;
+      height: 34px;
+      border: 4px solid #dbeafe;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    .loading-steps {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .loading-step {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      color: #334155;
+      font-size: 14px;
+      font-weight: 700;
+      padding: 10px 12px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner {
+        animation: none;
+      }
+    }
+
+    @media (max-width: 920px) {
+      .top-bar,
+      .workspace-grid,
       form,
+      .api-config,
       .button-row,
-      .metric-grid {
+      .metric-grid,
+      .detail-grid {
         grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>WorldCupAI MVP</h1>
-    <p>Simple local frontend for team-based match prediction.</p>
+    <div class="header-inner">
+      <div>
+        <h1>WorldCupAI</h1>
+        <p>SaaS-grade match prediction workspace.</p>
+      </div>
+      <div class="version-tag">Version 8.3</div>
+    </div>
   </header>
 
   <main>
@@ -324,25 +489,25 @@
             API address
             <input id="api_base_url" value="http://127.0.0.1:8000">
           </label>
-          <button id="save-api-button" type="button">保存 API 地址</button>
+          <button id="save-api-button" type="button">Save API URL</button>
         </div>
         <div id="current-api-url" class="current-api"></div>
       </section>
 
       <section class="card demo-note">
         <h2>Product Status</h2>
-        <p><strong>WorldCupAI v8.2</strong></p>
+        <p><strong>WorldCupAI v8.3</strong></p>
         <p>Status: Online Demo</p>
         <p class="empty">Backend recommended:</p>
         <code>https://worldcupai-api.onrender.com</code>
         <p>Cold start warning: Render Free may take 30-60 seconds on first request.</p>
         <p>Disclaimer: This is a simulation system, not betting advice.</p>
       </section>
-
-      <div id="health-status" class="status loading" aria-live="polite">正在检查后端连接...</div>
     </div>
 
-    <div class="grid">
+    <div id="health-status" class="status loading" aria-live="polite">Checking backend connection...</div>
+
+    <div class="workspace-grid">
       <section class="card">
         <h2>Match Input</h2>
         <form id="predict-form">
@@ -430,30 +595,56 @@
           </label>
 
           <div class="full button-row">
-            <button id="example-button" class="secondary" type="button">一键示例比赛</button>
+            <button id="example-button" class="secondary" type="button">Use Example</button>
+            <button id="reset-button" class="ghost" type="button">Reset Form</button>
             <button id="predict-button" type="submit">Predict</button>
           </div>
         </form>
         <div id="status" aria-live="polite"></div>
       </section>
 
-      <section class="card">
-        <h2>Prediction Result</h2>
-        <div id="results">
-          <p class="empty">Load teams, choose a match, then run a prediction.</p>
+      <section class="results-panel" aria-labelledby="results-title">
+        <h2 id="results-title" class="panel-title">Prediction Result</h2>
+        <div id="results" class="result-card-grid">
+          <section class="result-card">
+            <p class="empty">Load teams, choose a match, then run a prediction.</p>
+          </section>
         </div>
       </section>
     </div>
 
     <section class="card disclaimer">
-      本工具仅用于足球数据分析和模型演示，不构成投注或投资建议。预测结果不保证准确，请理性判断并遵守当地法律法规。
+      This tool is for football data analysis and model demonstration only. It is not betting or investment advice. Prediction results are not guaranteed. Please use rational judgment and follow local laws and regulations.
     </section>
   </main>
 
+  <div id="loading-overlay" class="loading-overlay" hidden aria-live="assertive" aria-busy="true">
+    <div class="loading-card">
+      <div class="spinner" aria-hidden="true"></div>
+      <h2>Predicting match result...</h2>
+      <div class="loading-steps">
+        <div class="loading-step">Predicting match result...</div>
+        <div class="loading-step">Analyzing weather impact...</div>
+        <div class="loading-step">Calculating Kelly strategy...</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
-    const API_STORAGE_KEY = "worldcupai_api_base_url";
-    let apiBaseUrl = getStoredApiBaseUrl();
+    const LEGACY_API_STORAGE_KEY = "worldcupai_api_base_url";
+    const STORAGE_KEYS = {
+      home_team: "worldcupai_home_team",
+      away_team: "worldcupai_away_team",
+      stadium_key: "worldcupai_stadium_key",
+      apiBaseUrl: "worldcupai_apiBaseUrl"
+    };
+    const DEFAULT_FORM_STATE = {
+      home_team: "Argentina",
+      away_team: "Japan",
+      stadium_key: "Mexico City",
+      weather_mode: "manual"
+    };
 
     const numberFields = [
       "open_home_odds",
@@ -470,6 +661,7 @@
 
     let allTeams = [];
     let allStadiums = [];
+    let apiBaseUrl = getStoredApiBaseUrl();
 
     const form = document.getElementById("predict-form");
     const apiInput = document.getElementById("api_base_url");
@@ -479,28 +671,46 @@
     const resultsBox = document.getElementById("results");
     const predictButton = document.getElementById("predict-button");
     const exampleButton = document.getElementById("example-button");
+    const resetButton = document.getElementById("reset-button");
     const saveApiButton = document.getElementById("save-api-button");
+    const loadingOverlay = document.getElementById("loading-overlay");
 
     function normalizeApiBaseUrl(value) {
       const trimmed = String(value ?? "").trim();
       const fallback = trimmed || DEFAULT_API_BASE_URL;
-
       return fallback.replace(/\/+$/, "");
     }
 
     function getStoredApiBaseUrl() {
-      return normalizeApiBaseUrl(localStorage.getItem(API_STORAGE_KEY));
+      const stored = localStorage.getItem(STORAGE_KEYS.apiBaseUrl) || localStorage.getItem(LEGACY_API_STORAGE_KEY);
+      return normalizeApiBaseUrl(stored);
+    }
+
+    function getSavedFormState() {
+      return {
+        home_team: localStorage.getItem(STORAGE_KEYS.home_team) || DEFAULT_FORM_STATE.home_team,
+        away_team: localStorage.getItem(STORAGE_KEYS.away_team) || DEFAULT_FORM_STATE.away_team,
+        stadium_key: localStorage.getItem(STORAGE_KEYS.stadium_key) || DEFAULT_FORM_STATE.stadium_key,
+        weather_mode: DEFAULT_FORM_STATE.weather_mode
+      };
+    }
+
+    function saveFormState() {
+      localStorage.setItem(STORAGE_KEYS.home_team, document.getElementById("home_team").value);
+      localStorage.setItem(STORAGE_KEYS.away_team, document.getElementById("away_team").value);
+      localStorage.setItem(STORAGE_KEYS.stadium_key, document.getElementById("stadium_key").value);
     }
 
     function updateApiDisplay() {
       apiInput.value = apiBaseUrl;
-      currentApiUrl.textContent = `当前正在使用：${apiBaseUrl}`;
+      currentApiUrl.textContent = `Currently using: ${apiBaseUrl}`;
     }
 
     function saveApiBaseUrl() {
       apiBaseUrl = normalizeApiBaseUrl(apiInput.value);
-      localStorage.setItem(API_STORAGE_KEY, apiBaseUrl);
+      localStorage.setItem(STORAGE_KEYS.apiBaseUrl, apiBaseUrl);
       updateApiDisplay();
+      setStatus(statusBox, "API URL saved.", "success");
       checkHealth();
       loadTeams();
       loadStadiums();
@@ -513,6 +723,12 @@
     function setStatus(element, message, type) {
       element.className = message ? `status ${type}` : "";
       element.textContent = message;
+    }
+
+    function setLoading(isLoading) {
+      loadingOverlay.hidden = !isLoading;
+      predictButton.disabled = isLoading;
+      predictButton.textContent = isLoading ? "Predicting..." : "Predict";
     }
 
     function escapeHtml(value) {
@@ -528,6 +744,14 @@
       return escapeHtml(JSON.stringify(value ?? null, null, 2));
     }
 
+    function valueOrDash(value) {
+      if (value === undefined || value === null || value === "") {
+        return "-";
+      }
+
+      return value;
+    }
+
     async function checkHealth() {
       try {
         const response = await fetch(apiUrl("/health"));
@@ -537,17 +761,9 @@
         }
 
         const data = await response.json();
-        setStatus(
-          healthStatus,
-          `后端已连接，版本 ${data.version ?? "unknown"}`,
-          "success"
-        );
+        setStatus(healthStatus, `Backend connected. Version ${data.version ?? "unknown"}.`, "success");
       } catch (error) {
-        setStatus(
-          healthStatus,
-          "后端未连接，请启动 uvicorn main:app --reload",
-          "error"
-        );
+        setStatus(healthStatus, "Backend unreachable. Start the backend or check the API URL.", "error");
       }
     }
 
@@ -581,9 +797,11 @@
         : allTeams;
 
       populateTeamSelect(selectId, filteredTeams);
+      saveFormState();
     }
 
     async function loadTeams() {
+      const savedState = getSavedFormState();
       setStatus(statusBox, "Loading teams...", "loading");
 
       try {
@@ -594,20 +812,15 @@
         }
 
         allTeams = await response.json();
-
-        populateTeamSelect("home_team", allTeams, "Argentina");
-        populateTeamSelect("away_team", allTeams, "Japan");
-
+        populateTeamSelect("home_team", allTeams, savedState.home_team);
+        populateTeamSelect("away_team", allTeams, savedState.away_team);
+        saveFormState();
         setStatus(statusBox, `Loaded ${allTeams.length} teams.`, "success");
       } catch (error) {
         allTeams = [];
         populateTeamSelect("home_team", allTeams);
         populateTeamSelect("away_team", allTeams);
-        setStatus(
-          statusBox,
-          "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
-          "error"
-        );
+        setStatus(statusBox, "Backend unreachable or invalid teams response.", "error");
       }
     }
 
@@ -619,12 +832,7 @@
       select.innerHTML = "";
 
       stadiums.forEach((stadium) => {
-        select.add(
-          new Option(
-            `${stadium.key} - ${stadium.stadium}`,
-            stadium.key
-          )
-        );
+        select.add(new Option(`${stadium.key} - ${stadium.stadium}`, stadium.key));
       });
 
       if (stadiums.some((stadium) => stadium.key === targetValue)) {
@@ -635,6 +843,8 @@
     }
 
     async function loadStadiums() {
+      const savedState = getSavedFormState();
+
       try {
         const response = await fetch(apiUrl("/stadiums"));
 
@@ -643,27 +853,38 @@
         }
 
         allStadiums = await response.json();
-        populateStadiumSelect(allStadiums, "Mexico City");
+        populateStadiumSelect(allStadiums, savedState.stadium_key);
+        saveFormState();
       } catch (error) {
         allStadiums = [];
         populateStadiumSelect(allStadiums);
-        setStatus(
-          statusBox,
-          "无法加载球场列表，请确认后端 /stadiums 已可用。",
-          "error"
-        );
+        setStatus(statusBox, "Backend unreachable or invalid stadium response.", "error");
       }
     }
 
-    function fillExampleMatch() {
+    function applyDefaultMatch() {
       document.getElementById("home_team_search").value = "";
       document.getElementById("away_team_search").value = "";
+      populateTeamSelect("home_team", allTeams, DEFAULT_FORM_STATE.home_team);
+      populateTeamSelect("away_team", allTeams, DEFAULT_FORM_STATE.away_team);
+      populateStadiumSelect(allStadiums, DEFAULT_FORM_STATE.stadium_key);
+      document.getElementById("weather_mode").value = DEFAULT_FORM_STATE.weather_mode;
+      saveFormState();
+    }
 
-      populateTeamSelect("home_team", allTeams, "Argentina");
-      populateTeamSelect("away_team", allTeams, "Japan");
-      populateStadiumSelect(allStadiums, "Mexico City");
+    function fillExampleMatch() {
+      applyDefaultMatch();
+      setStatus(statusBox, "Example match loaded.", "success");
+    }
 
-      document.getElementById("weather_mode").value = "manual";
+    function resetForm() {
+      applyDefaultMatch();
+      resultsBox.innerHTML = `
+        <section class="result-card">
+          <p class="empty">Form reset to Argentina vs Japan, Mexico City, manual weather.</p>
+        </section>
+      `;
+      setStatus(statusBox, "Form reset to defaults.", "success");
     }
 
     function buildPayload() {
@@ -689,78 +910,108 @@
       return `<ul>${items.map(formatter).join("")}</ul>`;
     }
 
+    function renderTopScoreItem(item) {
+      if (Array.isArray(item)) {
+        return `<li>${escapeHtml(item[0])} - ${escapeHtml(valueOrDash(item[1]))}%</li>`;
+      }
+
+      return `<li>${escapeHtml(valueOrDash(item?.score))} - ${escapeHtml(valueOrDash(item?.prob))}%</li>`;
+    }
+
+    function showPredictionError(message, details) {
+      resultsBox.innerHTML = `
+        <section class="result-card error-box" role="alert">
+          <h3>⚠ Prediction Failed</h3>
+          <p>${escapeHtml(message || "backend unreachable or invalid input")}</p>
+          <p class="error-detail">${escapeHtml(details || "backend unreachable or invalid input")}</p>
+        </section>
+      `;
+    }
+
     function renderResults(data) {
       if (data.error) {
-        resultsBox.innerHTML = `<div class="error-box">${escapeHtml(data.error)}</div>`;
+        showPredictionError(data.error, "backend unreachable or invalid input");
         return;
       }
 
-      const topScoresHtml = renderList(
-        data.top_scores,
-        (item) => `<li>${escapeHtml(item.score)} - ${escapeHtml(item.prob)}%</li>`
-      );
+      const topScoresHtml = renderList(data.top_scores, renderTopScoreItem);
+      const summary = data.summary?.reason ?? data.report?.final_action ?? data.summary ?? data.report ?? null;
+      const marketOdds = data.market_odds ?? data.markets ?? null;
+      const kellyStrategy = data.kelly_strategy ?? data.kelly?.best_value ?? data.kelly ?? null;
 
       resultsBox.innerHTML = `
-        <div class="result-section">
-          <h3>${escapeHtml(data.home_team)} vs ${escapeHtml(data.away_team)}</h3>
-          <p class="muted">Input: ${escapeHtml(data.input_teams?.home_team)} vs ${escapeHtml(data.input_teams?.away_team)}</p>
-          <div class="metric-grid">
-            <div class="metric">
-              <span>主胜</span>
-              <strong>${escapeHtml(data.home_win)}%</strong>
+        <section class="result-card">
+          <h3>Match Result Card</h3>
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">Match</span>
+              <span class="detail-value">${escapeHtml(valueOrDash(data.home_team))} vs ${escapeHtml(valueOrDash(data.away_team))}</span>
             </div>
-            <div class="metric">
-              <span>平局</span>
-              <strong>${escapeHtml(data.draw)}%</strong>
+            <div class="detail-item">
+              <span class="detail-label">Input Teams</span>
+              <span class="detail-value">${escapeHtml(valueOrDash(data.input_teams?.home_team))} vs ${escapeHtml(valueOrDash(data.input_teams?.away_team))}</span>
             </div>
-            <div class="metric">
-              <span>客胜</span>
-              <strong>${escapeHtml(data.away_win)}%</strong>
+            <div class="detail-item">
+              <span class="detail-label">Stadium</span>
+              <span class="detail-value">${escapeHtml(valueOrDash(data.stadium_key ?? document.getElementById("stadium_key").value))}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Weather Mode</span>
+              <span class="detail-value">${escapeHtml(document.getElementById("weather_mode").value)}</span>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div class="result-section">
-          <h3>Top Scores</h3>
+        <section class="result-card">
+          <h3>Probabilities Card</h3>
+          <div class="metric-grid">
+            <div class="metric">
+              <span>Home Win</span>
+              <strong>${escapeHtml(valueOrDash(data.home_win))}%</strong>
+            </div>
+            <div class="metric">
+              <span>Draw</span>
+              <strong>${escapeHtml(valueOrDash(data.draw))}%</strong>
+            </div>
+            <div class="metric">
+              <span>Away Win</span>
+              <strong>${escapeHtml(valueOrDash(data.away_win))}%</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="result-card">
+          <h3>Top Scores Card</h3>
           ${topScoresHtml}
-        </div>
+        </section>
 
-        <div class="result-section">
-          <h3>Markets</h3>
-          <pre>${formatJson(data.markets)}</pre>
-        </div>
+        <section class="result-card">
+          <h3>Market Odds Card</h3>
+          <pre>${formatJson(marketOdds)}</pre>
+        </section>
 
-        <div class="result-section">
-          <h3>Weather</h3>
-          <pre>${formatJson(data.weather)}</pre>
-        </div>
+        <section class="result-card">
+          <h3>Kelly Strategy Card</h3>
+          <pre>${formatJson(kellyStrategy)}</pre>
+        </section>
 
-        <div class="result-section">
-          <h3>Kelly Best Value</h3>
-          <pre>${formatJson(data.kelly?.best_value)}</pre>
-        </div>
-
-        <div class="result-section">
-          <h3>Risk Control</h3>
+        <section class="result-card">
+          <h3>Risk Control Card</h3>
           <pre>${formatJson(data.risk_control)}</pre>
-        </div>
+        </section>
 
-        <div class="result-section">
-          <h3>Summary</h3>
-          <pre>${formatJson(data.summary?.reason ?? data.summary)}</pre>
-        </div>
-
-        <div class="result-section">
-          <h3>Report</h3>
-          <pre>${formatJson(data.report?.final_action ?? data.report)}</pre>
-        </div>
+        <section class="result-card">
+          <h3>Summary Card</h3>
+          <pre>${formatJson(summary)}</pre>
+        </section>
       `;
     }
 
     async function submitPrediction(event) {
       event.preventDefault();
-      predictButton.disabled = true;
-      setStatus(statusBox, "Running prediction...", "loading");
+      saveFormState();
+      setLoading(true);
+      setStatus(statusBox, "Predicting match result...", "loading");
 
       try {
         const response = await fetch(apiUrl("/predict_team"), {
@@ -779,18 +1030,15 @@
         renderResults(data);
 
         if (data.error) {
-          setStatus(statusBox, data.error, "error");
+          setStatus(statusBox, "Prediction failed.", "error");
         } else {
           setStatus(statusBox, "Prediction complete.", "success");
         }
       } catch (error) {
-        setStatus(
-          statusBox,
-          "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
-          "error"
-        );
+        showPredictionError("backend unreachable or invalid input", error.message);
+        setStatus(statusBox, "Prediction failed.", "error");
       } finally {
-        predictButton.disabled = false;
+        setLoading(false);
       }
     }
 
@@ -802,8 +1050,12 @@
       .getElementById("away_team_search")
       .addEventListener("input", () => filterTeamSelect("away_team_search", "away_team"));
 
+    document.getElementById("home_team").addEventListener("change", saveFormState);
+    document.getElementById("away_team").addEventListener("change", saveFormState);
+    document.getElementById("stadium_key").addEventListener("change", saveFormState);
     saveApiButton.addEventListener("click", saveApiBaseUrl);
     exampleButton.addEventListener("click", fillExampleMatch);
+    resetButton.addEventListener("click", resetForm);
     form.addEventListener("submit", submitPrediction);
 
     updateApiDisplay();
