@@ -1,0 +1,41 @@
+from fastapi.testclient import TestClient
+
+from main import app
+
+
+client = TestClient(app)
+
+
+def test_backtest_api_returns_summary_and_details():
+
+    response = client.get("/backtest")
+
+    assert response.status_code == 200
+
+    data = response.json()
+    summary = data["summary"]
+
+    assert summary["matches_tested"] > 0
+
+    for field in [
+        "winner_accuracy",
+        "top_score_hit_rate",
+        "btts_accuracy",
+        "over25_accuracy",
+    ]:
+        assert field in summary
+
+    assert isinstance(data["details"], list)
+
+    first_detail = data["details"][0]
+
+    for field in [
+        "actual_score",
+        "actual_winner",
+        "predicted_winner",
+        "winner_hit",
+        "top_score_hit",
+        "btts_hit",
+        "over25_hit",
+    ]:
+        assert field in first_detail

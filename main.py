@@ -235,8 +235,7 @@ def stadiums_api():
     return list_stadiums()
 
 
-@app.post("/predict_team")
-def predict_team(match: TeamMatchInput):
+def run_team_prediction(match: TeamMatchInput):
 
     home_key = resolve_team_name(match.home_team)
     away_key = resolve_team_name(match.away_team)
@@ -518,3 +517,17 @@ def predict_team(match: TeamMatchInput):
 
         "report": report_result
     }
+
+
+@app.post("/predict_team")
+def predict_team(match: TeamMatchInput):
+
+    return run_team_prediction(match)
+
+
+@app.get("/backtest")
+def backtest_api():
+
+    from backtest import run_backtest
+
+    return run_backtest()
