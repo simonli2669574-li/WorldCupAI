@@ -317,3 +317,37 @@ http://127.0.0.1:8000/health
 3. If the API URL is wrong, change it back to `http://127.0.0.1:8000` and save again. The page will reload health, teams, and stadiums from the corrected backend.
 
 
+## GitHub Pages Frontend Deployment
+
+The static frontend can be published from the `docs/` folder.
+
+If `frontend/index.html` changes later, copy it again to `docs/index.html` before publishing.
+
+GitHub Pages uses HTTPS, so the frontend Backend API URL must also use HTTPS.
+
+### GitHub Pages Settings
+
+1. Open the GitHub repository.
+2. Go to `Settings`.
+3. Go to `Pages`.
+4. Set `Source` to `Deploy from a branch`.
+5. Set `Branch` to `main`.
+6. Set `Folder` to `/docs`.
+7. Save.
+8. Wait for GitHub Pages to publish.
+
+Open:
+
+```text
+https://simonli2669574-li.github.io/WorldCupAI/
+```
+
+In the frontend `Backend API URL` field, enter:
+
+```text
+https://worldcupai-api.onrender.com
+```
+
+Click save.
+
+

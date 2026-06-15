@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WorldCupAI MVP</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #17202a;
+      --muted: #627084;
+      --border: #d9e0e8;
+      --accent: #0b6bcb;
+      --accent-dark: #084f96;
+      --danger: #b42318;
+      --danger-bg: #fff1f0;
+      --success: #067647;
+      --success-bg: #ecfdf3;
+      --warning-bg: #fffbeb;
+      --warning: #92400e;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, "Microsoft YaHei", sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      background: #111827;
+      color: #ffffff;
+      padding: 24px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      color: #cbd5e1;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 24px auto 48px;
+    }
+
+    .top-bar {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .api-config {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .api-config label {
+      margin: 0;
+    }
+
+    .current-api {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      padding: 20px;
+    }
+
+    h2,
+    h3 {
+      margin: 0 0 14px;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 16px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      background: #ffffff;
+      padding: 8px 10px;
+      font-size: 15px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      outline: 2px solid rgba(11, 107, 203, 0.14);
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 0 16px;
+    }
+
+    button.secondary {
+      background: #e6eef8;
+      color: #0f2f4f;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+    }
+
+    button.secondary:hover {
+      background: #d6e5f7;
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.65;
+    }
+
+    .status {
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 14px;
+    }
+
+    #status {
+      margin-top: 14px;
+    }
+
+    .status.loading {
+      background: #eef6ff;
+      color: #064b84;
+      border: 1px solid #b8dcff;
+    }
+
+    .status.error {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #ffccc7;
+      font-weight: 700;
+    }
+
+    .status.success {
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid #abefc6;
+      font-weight: 700;
+    }
+
+    .result-section {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+
+    .result-section:first-child {
+      border-top: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      background: #f8fafc;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 24px;
+    }
+
+    .metric span,
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    ul {
+      margin: 8px 0 0;
+      padding-left: 18px;
+    }
+
+    pre {
+      overflow: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 13px;
+    }
+
+    .empty {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .error-box {
+      background: var(--danger-bg);
+      border: 1px solid #ffccc7;
+      border-radius: 8px;
+      color: var(--danger);
+      font-weight: 700;
+      padding: 14px;
+    }
+
+    .disclaimer {
+      margin-top: 20px;
+      background: var(--warning-bg);
+      border-color: #fde68a;
+      color: var(--warning);
+    }
+
+    @media (max-width: 880px) {
+      .api-config,
+      .grid,
+      form,
+      .button-row,
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>WorldCupAI MVP</h1>
+    <p>Simple local frontend for team-based match prediction.</p>
+  </header>
+
+  <main>
+    <div class="top-bar">
+      <section class="card">
+        <h2>Backend API URL</h2>
+        <div class="api-config">
+          <label>
+            API address
+            <input id="api_base_url" value="http://127.0.0.1:8000">
+          </label>
+          <button id="save-api-button" type="button">保存 API 地址</button>
+        </div>
+        <div id="current-api-url" class="current-api"></div>
+      </section>
+
+      <div id="health-status" class="status loading" aria-live="polite">正在检查后端连接...</div>
+    </div>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Match Input</h2>
+        <form id="predict-form">
+          <label>
+            Home team search
+            <input id="home_team_search" name="home_team_search" placeholder="Filter home team">
+          </label>
+
+          <label>
+            Away team search
+            <input id="away_team_search" name="away_team_search" placeholder="Filter away team">
+          </label>
+
+          <label>
+            Home team
+            <select id="home_team" name="home_team" required></select>
+          </label>
+
+          <label>
+            Away team
+            <select id="away_team" name="away_team" required></select>
+          </label>
+
+          <label>
+            Stadium
+            <select id="stadium_key" name="stadium_key" required></select>
+          </label>
+
+          <label>
+            Weather mode
+            <select id="weather_mode" name="weather_mode">
+              <option value="manual" selected>manual</option>
+              <option value="auto">auto</option>
+            </select>
+          </label>
+
+          <label>
+            Open home odds
+            <input id="open_home_odds" name="open_home_odds" type="number" step="0.01" value="1.80">
+          </label>
+
+          <label>
+            Current home odds
+            <input id="current_home_odds" name="current_home_odds" type="number" step="0.01" value="1.75">
+          </label>
+
+          <label>
+            Open draw odds
+            <input id="open_draw_odds" name="open_draw_odds" type="number" step="0.01" value="3.50">
+          </label>
+
+          <label>
+            Current draw odds
+            <input id="current_draw_odds" name="current_draw_odds" type="number" step="0.01" value="3.80">
+          </label>
+
+          <label>
+            Open away odds
+            <input id="open_away_odds" name="open_away_odds" type="number" step="0.01" value="4.00">
+          </label>
+
+          <label>
+            Current away odds
+            <input id="current_away_odds" name="current_away_odds" type="number" step="0.01" value="5.20">
+          </label>
+
+          <label>
+            Bankroll
+            <input id="bankroll" name="bankroll" type="number" step="1" value="10000">
+          </label>
+
+          <label>
+            Missing starters
+            <input id="missing_starters" name="missing_starters" type="number" step="1" value="0">
+          </label>
+
+          <label>
+            Star player out
+            <input id="star_player_out" name="star_player_out" type="number" step="1" value="0">
+          </label>
+
+          <label>
+            Injury level
+            <input id="injury_level" name="injury_level" type="number" step="0.1" value="0">
+          </label>
+
+          <div class="full button-row">
+            <button id="example-button" class="secondary" type="button">一键示例比赛</button>
+            <button id="predict-button" type="submit">Predict</button>
+          </div>
+        </form>
+        <div id="status" aria-live="polite"></div>
+      </section>
+
+      <section class="card">
+        <h2>Prediction Result</h2>
+        <div id="results">
+          <p class="empty">Load teams, choose a match, then run a prediction.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="card disclaimer">
+      本工具仅用于足球数据分析和模型演示，不构成投注或投资建议。预测结果不保证准确，请理性判断并遵守当地法律法规。
+    </section>
+  </main>
+
+  <script>
+    const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
+    const API_STORAGE_KEY = "worldcupai_api_base_url";
+    let apiBaseUrl = getStoredApiBaseUrl();
+
+    const numberFields = [
+      "open_home_odds",
+      "current_home_odds",
+      "open_draw_odds",
+      "current_draw_odds",
+      "open_away_odds",
+      "current_away_odds",
+      "bankroll",
+      "missing_starters",
+      "star_player_out",
+      "injury_level"
+    ];
+
+    let allTeams = [];
+    let allStadiums = [];
+
+    const form = document.getElementById("predict-form");
+    const apiInput = document.getElementById("api_base_url");
+    const currentApiUrl = document.getElementById("current-api-url");
+    const healthStatus = document.getElementById("health-status");
+    const statusBox = document.getElementById("status");
+    const resultsBox = document.getElementById("results");
+    const predictButton = document.getElementById("predict-button");
+    const exampleButton = document.getElementById("example-button");
+    const saveApiButton = document.getElementById("save-api-button");
+
+    function normalizeApiBaseUrl(value) {
+      const trimmed = String(value ?? "").trim();
+      const fallback = trimmed || DEFAULT_API_BASE_URL;
+
+      return fallback.replace(/\/+$/, "");
+    }
+
+    function getStoredApiBaseUrl() {
+      return normalizeApiBaseUrl(localStorage.getItem(API_STORAGE_KEY));
+    }
+
+    function updateApiDisplay() {
+      apiInput.value = apiBaseUrl;
+      currentApiUrl.textContent = `当前正在使用：${apiBaseUrl}`;
+    }
+
+    function saveApiBaseUrl() {
+      apiBaseUrl = normalizeApiBaseUrl(apiInput.value);
+      localStorage.setItem(API_STORAGE_KEY, apiBaseUrl);
+      updateApiDisplay();
+      checkHealth();
+      loadTeams();
+      loadStadiums();
+    }
+
+    function apiUrl(path) {
+      return `${apiBaseUrl}${path}`;
+    }
+
+    function setStatus(element, message, type) {
+      element.className = message ? `status ${type}` : "";
+      element.textContent = message;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function formatJson(value) {
+      return escapeHtml(JSON.stringify(value ?? null, null, 2));
+    }
+
+    async function checkHealth() {
+      try {
+        const response = await fetch(apiUrl("/health"));
+
+        if (!response.ok) {
+          throw new Error(`Health API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        setStatus(
+          healthStatus,
+          `后端已连接，版本 ${data.version ?? "unknown"}`,
+          "success"
+        );
+      } catch (error) {
+        setStatus(
+          healthStatus,
+          "后端未连接，请启动 uvicorn main:app --reload",
+          "error"
+        );
+      }
+    }
+
+    function populateTeamSelect(selectId, teams, preferredName) {
+      const select = document.getElementById(selectId);
+      const currentValue = select.value;
+      const targetValue = preferredName || currentValue;
+
+      select.innerHTML = "";
+
+      teams.forEach((team) => {
+        select.add(new Option(team.name, team.name));
+      });
+
+      if (teams.some((team) => team.name === targetValue)) {
+        select.value = targetValue;
+      } else if (teams.length > 0) {
+        select.value = teams[0].name;
+      }
+    }
+
+    function filterTeamSelect(searchInputId, selectId) {
+      const keyword = document
+        .getElementById(searchInputId)
+        .value
+        .trim()
+        .toLowerCase();
+
+      const filteredTeams = keyword
+        ? allTeams.filter((team) => team.name.toLowerCase().includes(keyword))
+        : allTeams;
+
+      populateTeamSelect(selectId, filteredTeams);
+    }
+
+    async function loadTeams() {
+      setStatus(statusBox, "Loading teams...", "loading");
+
+      try {
+        const response = await fetch(apiUrl("/teams"));
+
+        if (!response.ok) {
+          throw new Error(`Teams API returned ${response.status}`);
+        }
+
+        allTeams = await response.json();
+
+        populateTeamSelect("home_team", allTeams, "Argentina");
+        populateTeamSelect("away_team", allTeams, "Japan");
+
+        setStatus(statusBox, `Loaded ${allTeams.length} teams.`, "success");
+      } catch (error) {
+        allTeams = [];
+        populateTeamSelect("home_team", allTeams);
+        populateTeamSelect("away_team", allTeams);
+        setStatus(
+          statusBox,
+          "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
+          "error"
+        );
+      }
+    }
+
+    function populateStadiumSelect(stadiums, preferredKey) {
+      const select = document.getElementById("stadium_key");
+      const currentValue = select.value;
+      const targetValue = preferredKey || currentValue;
+
+      select.innerHTML = "";
+
+      stadiums.forEach((stadium) => {
+        select.add(
+          new Option(
+            `${stadium.key} - ${stadium.stadium}`,
+            stadium.key
+          )
+        );
+      });
+
+      if (stadiums.some((stadium) => stadium.key === targetValue)) {
+        select.value = targetValue;
+      } else if (stadiums.length > 0) {
+        select.value = stadiums[0].key;
+      }
+    }
+
+    async function loadStadiums() {
+      try {
+        const response = await fetch(apiUrl("/stadiums"));
+
+        if (!response.ok) {
+          throw new Error(`Stadiums API returned ${response.status}`);
+        }
+
+        allStadiums = await response.json();
+        populateStadiumSelect(allStadiums, "Mexico City");
+      } catch (error) {
+        allStadiums = [];
+        populateStadiumSelect(allStadiums);
+        setStatus(
+          statusBox,
+          "无法加载球场列表，请确认后端 /stadiums 已可用。",
+          "error"
+        );
+      }
+    }
+
+    function fillExampleMatch() {
+      document.getElementById("home_team_search").value = "";
+      document.getElementById("away_team_search").value = "";
+
+      populateTeamSelect("home_team", allTeams, "Argentina");
+      populateTeamSelect("away_team", allTeams, "Japan");
+      populateStadiumSelect(allStadiums, "Mexico City");
+
+      document.getElementById("weather_mode").value = "manual";
+    }
+
+    function buildPayload() {
+      const payload = {
+        home_team: document.getElementById("home_team").value,
+        away_team: document.getElementById("away_team").value,
+        stadium_key: document.getElementById("stadium_key").value,
+        weather_mode: document.getElementById("weather_mode").value
+      };
+
+      numberFields.forEach((field) => {
+        payload[field] = Number(document.getElementById(field).value);
+      });
+
+      return payload;
+    }
+
+    function renderList(items, formatter) {
+      if (!Array.isArray(items) || items.length === 0) {
+        return "<p class=\"empty\">No data.</p>";
+      }
+
+      return `<ul>${items.map(formatter).join("")}</ul>`;
+    }
+
+    function renderResults(data) {
+      if (data.error) {
+        resultsBox.innerHTML = `<div class="error-box">${escapeHtml(data.error)}</div>`;
+        return;
+      }
+
+      const topScoresHtml = renderList(
+        data.top_scores,
+        (item) => `<li>${escapeHtml(item.score)} - ${escapeHtml(item.prob)}%</li>`
+      );
+
+      resultsBox.innerHTML = `
+        <div class="result-section">
+          <h3>${escapeHtml(data.home_team)} vs ${escapeHtml(data.away_team)}</h3>
+          <p class="muted">Input: ${escapeHtml(data.input_teams?.home_team)} vs ${escapeHtml(data.input_teams?.away_team)}</p>
+          <div class="metric-grid">
+            <div class="metric">
+              <span>主胜</span>
+              <strong>${escapeHtml(data.home_win)}%</strong>
+            </div>
+            <div class="metric">
+              <span>平局</span>
+              <strong>${escapeHtml(data.draw)}%</strong>
+            </div>
+            <div class="metric">
+              <span>客胜</span>
+              <strong>${escapeHtml(data.away_win)}%</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h3>Top Scores</h3>
+          ${topScoresHtml}
+        </div>
+
+        <div class="result-section">
+          <h3>Markets</h3>
+          <pre>${formatJson(data.markets)}</pre>
+        </div>
+
+        <div class="result-section">
+          <h3>Weather</h3>
+          <pre>${formatJson(data.weather)}</pre>
+        </div>
+
+        <div class="result-section">
+          <h3>Kelly Best Value</h3>
+          <pre>${formatJson(data.kelly?.best_value)}</pre>
+        </div>
+
+        <div class="result-section">
+          <h3>Risk Control</h3>
+          <pre>${formatJson(data.risk_control)}</pre>
+        </div>
+
+        <div class="result-section">
+          <h3>Summary</h3>
+          <pre>${formatJson(data.summary?.reason ?? data.summary)}</pre>
+        </div>
+
+        <div class="result-section">
+          <h3>Report</h3>
+          <pre>${formatJson(data.report?.final_action ?? data.report)}</pre>
+        </div>
+      `;
+    }
+
+    async function submitPrediction(event) {
+      event.preventDefault();
+      predictButton.disabled = true;
+      setStatus(statusBox, "Running prediction...", "loading");
+
+      try {
+        const response = await fetch(apiUrl("/predict_team"), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(buildPayload())
+        });
+
+        if (!response.ok) {
+          throw new Error(`Prediction API returned ${response.status}`);
+        }
+
+        const data = await response.json();
+        renderResults(data);
+
+        if (data.error) {
+          setStatus(statusBox, data.error, "error");
+        } else {
+          setStatus(statusBox, "Prediction complete.", "success");
+        }
+      } catch (error) {
+        setStatus(
+          statusBox,
+          "无法连接后端，请确认 uvicorn main:app --reload 已启动。",
+          "error"
+        );
+      } finally {
+        predictButton.disabled = false;
+      }
+    }
+
+    document
+      .getElementById("home_team_search")
+      .addEventListener("input", () => filterTeamSelect("home_team_search", "home_team"));
+
+    document
+      .getElementById("away_team_search")
+      .addEventListener("input", () => filterTeamSelect("away_team_search", "away_team"));
+
+    saveApiButton.addEventListener("click", saveApiBaseUrl);
+    exampleButton.addEventListener("click", fillExampleMatch);
+    form.addEventListener("submit", submitPrediction);
+
+    updateApiDisplay();
+    checkHealth();
+    loadTeams();
+    loadStadiums();
+  </script>
+</body>
+</html>
