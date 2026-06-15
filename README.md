@@ -351,3 +351,34 @@ https://worldcupai-api.onrender.com
 Click save.
 
 
+## Online Demo
+
+Frontend Demo URL:
+
+```text
+https://simonli2669574-li.github.io/WorldCupAI/
+```
+
+Backend API URL:
+
+```text
+https://worldcupai-api.onrender.com
+```
+
+Health Check:
+
+```text
+https://worldcupai-api.onrender.com/health
+```
+
+Usage:
+
+打开前端 Demo 后，在 Backend API URL 输入 Render 后端地址，然后点击保存。
+
+Render Free 实例可能冷启动，第一次请求可能需要 30-60 秒。
+
+免责声明：
+
+本工具仅用于足球数据分析和模型演示，不构成投注或投资建议。预测结果不保证准确，请理性判断并遵守当地法律法规。
+
+

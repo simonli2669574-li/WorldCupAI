@@ -19,6 +19,8 @@
       --success-bg: #ecfdf3;
       --warning-bg: #fffbeb;
       --warning: #92400e;
+      --info-bg: #eef6ff;
+      --info: #064b84;
     }
 
     * {
@@ -91,6 +93,20 @@
       border-radius: 8px;
       box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
       padding: 20px;
+    }
+
+    .demo-note {
+      background: var(--info-bg);
+      border-color: #b8dcff;
+      color: var(--info);
+    }
+
+    .demo-note code {
+      display: inline-block;
+      margin-top: 6px;
+      color: #04385f;
+      font-size: 14px;
+      word-break: break-all;
     }
 
     h2,
@@ -311,6 +327,13 @@
           <button id="save-api-button" type="button">保存 API 地址</button>
         </div>
         <div id="current-api-url" class="current-api"></div>
+      </section>
+
+      <section class="card demo-note">
+        <h2>线上 Demo 提示</h2>
+        <p class="empty">推荐后端地址：</p>
+        <code>https://worldcupai-api.onrender.com</code>
+        <p>Render Free 可能冷启动，第一次请求可能需要 30-60 秒。</p>
       </section>
 
       <div id="health-status" class="status loading" aria-live="polite">正在检查后端连接...</div>
