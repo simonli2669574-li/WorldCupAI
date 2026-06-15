@@ -353,13 +353,13 @@ Click save.
 
 ## Online Demo
 
-Frontend Demo URL:
+Frontend:
 
 ```text
 https://simonli2669574-li.github.io/WorldCupAI/
 ```
 
-Backend API URL:
+Backend:
 
 ```text
 https://worldcupai-api.onrender.com
@@ -371,14 +371,29 @@ Health Check:
 https://worldcupai-api.onrender.com/health
 ```
 
+Features:
+
+- 48 teams database
+- 16 stadiums
+- Weather-aware prediction
+- Kelly betting model
+- Risk control system
+
 Usage:
 
-打开前端 Demo 后，在 Backend API URL 输入 Render 后端地址，然后点击保存。
+1. Open frontend
+2. Set Backend API URL
+3. Click Save
+4. Run prediction
 
-Render Free 实例可能冷启动，第一次请求可能需要 30-60 秒。
+Notes:
 
-免责声明：
+- Render free instance may cold start (30-60s)
+- GitHub Pages is static frontend
+- Backend is FastAPI + Render
 
-本工具仅用于足球数据分析和模型演示，不构成投注或投资建议。预测结果不保证准确，请理性判断并遵守当地法律法规。
+Disclaimer:
+
+Not financial or betting advice. For simulation only.
 
 
