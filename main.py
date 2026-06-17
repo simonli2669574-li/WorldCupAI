@@ -8,6 +8,7 @@ from risk import apply_risk_control
 from market import calculate_market_edges
 from report import generate_value_summary, generate_report
 from match_context import build_match_context_effect, apply_context_xg
+from match_snapshot import build_data_realism
 from player_analysis import build_player_analysis, apply_player_xg_modifier
 
 from agents.odds_agent import analyze_odds
@@ -504,6 +505,12 @@ def run_team_prediction(match: TeamMatchInput):
         agent_result
     )
 
+    data_realism = build_data_realism(
+        home_key,
+        away_key,
+        match
+    )
+
     return {
         "home_team": home_key,
         "away_team": away_key,
@@ -550,7 +557,9 @@ def run_team_prediction(match: TeamMatchInput):
 
         "summary": summary_result,
 
-        "report": report_result
+        "report": report_result,
+
+        "data_realism": data_realism
     }
 
 

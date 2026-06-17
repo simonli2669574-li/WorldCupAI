@@ -1,0 +1,41 @@
+[
+  {
+    "match_key": "ghana::panama",
+    "match": "Ghana vs Panama",
+    "group": "Group L",
+    "group_match_number": 1,
+    "stadium_key": "Toronto",
+    "overall_level": "partial",
+    "summary": "A partial data realism snapshot is available for Ghana vs Panama. It documents which inputs are manual, model-derived, unverified, unavailable, or synthetic, and does not change the prediction formula.",
+    "odds": {
+      "status": "manual_user_input",
+      "note": "Odds are supplied by the user and are not verified against live market data."
+    },
+    "players": {
+      "status": "manual_model_profile",
+      "note": "Player and squad profiles are model-side/manual profiles, not verified live roster data."
+    },
+    "injuries": {
+      "status": "not_verified",
+      "note": "Injury and availability information has not been independently verified."
+    },
+    "weather": {
+      "status": "manual_or_default",
+      "note": "Weather may come from manual inputs or application defaults unless auto weather is explicitly used."
+    },
+    "group_context": {
+      "status": "not_available_for_group_l",
+      "note": "Group L standings context is not available in the local group context dataset."
+    },
+    "backtest": {
+      "status": "synthetic_sample_only",
+      "note": "Backtest evidence uses the local synthetic sample only and should not be interpreted as real historical validation."
+    },
+    "warnings": [
+      "Odds must be manually verified before use.",
+      "Injuries and player availability must be manually verified before use.",
+      "Weather and venue conditions must be manually verified before use.",
+      "Starting lineups must be manually verified before use."
+    ]
+  }
+]

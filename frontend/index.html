@@ -1286,6 +1286,56 @@
       `;
     }
 
+    function renderDataRealismStatus(label, item) {
+      return `
+        <div class="detail-item">
+          <span class="detail-label">${escapeHtml(label)}</span>
+          <span class="detail-value">${escapeHtml(valueOrDash(item?.status))}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">${escapeHtml(`${label} Note`)}</span>
+          <span class="detail-value">${escapeHtml(valueOrDash(item?.note))}</span>
+        </div>
+      `;
+    }
+
+    function renderDataRealismWarnings(warnings) {
+      if (!Array.isArray(warnings) || warnings.length === 0) {
+        return "<p class=\"empty\">No warnings.</p>";
+      }
+
+      return `<ul>${warnings.map((warning) => `<li>${escapeHtml(warning)}</li>`).join("")}</ul>`;
+    }
+
+    function renderDataRealism(dataRealism) {
+      if (!dataRealism?.available) {
+        return `
+          <section class="result-card">
+            <h3>Data Realism Card</h3>
+            <p class="empty">No match-specific data realism snapshot is available.</p>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="result-card">
+          <h3>Data Realism Card</h3>
+          <div class="detail-grid">
+            ${renderContextDetail("Overall Level", dataRealism.overall_level)}
+            ${renderContextDetail("Summary", dataRealism.summary)}
+            ${renderDataRealismStatus("Odds", dataRealism.odds)}
+            ${renderDataRealismStatus("Players", dataRealism.players)}
+            ${renderDataRealismStatus("Injuries", dataRealism.injuries)}
+            ${renderDataRealismStatus("Weather", dataRealism.weather)}
+            ${renderDataRealismStatus("Group Context", dataRealism.group_context)}
+            ${renderDataRealismStatus("Backtest", dataRealism.backtest)}
+          </div>
+          <h4>Warnings</h4>
+          ${renderDataRealismWarnings(dataRealism.warnings)}
+        </section>
+      `;
+    }
+
     function renderPlayerProfileCard(title, profile) {
       return `
         <section class="context-team-card">
@@ -1403,6 +1453,8 @@
             </div>
           </div>
         </section>
+
+        ${renderDataRealism(data.data_realism)}
 
         <section class="result-card">
           <h3>Probabilities Card</h3>
