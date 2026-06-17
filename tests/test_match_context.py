@@ -35,7 +35,7 @@ def test_third_group_match_six_point_team_has_rotation_risk():
 def test_third_group_match_one_point_team_must_win():
 
     context = evaluate_team_context(
-        "United States",
+        "Haiti",
         get_sample_group_table(),
         3
     )
@@ -48,7 +48,7 @@ def test_third_group_match_one_point_team_must_win():
 def test_third_group_match_four_point_team_draw_is_enough():
 
     context = evaluate_team_context(
-        "Japan",
+        "Morocco",
         get_sample_group_table(),
         3
     )
@@ -57,11 +57,23 @@ def test_third_group_match_four_point_team_draw_is_enough():
     assert context["xg_multiplier"] < 1
 
 
+def test_third_group_match_three_point_team_has_pressure():
+
+    context = evaluate_team_context(
+        "Scotland",
+        get_sample_group_table(),
+        3
+    )
+
+    assert context["motivation_level"] == "high"
+    assert context["xg_multiplier"] > 1
+
+
 def test_predict_team_auto_context_false_returns_disabled_context():
 
     payload = {
         "home_team": "Brazil",
-        "away_team": "Japan",
+        "away_team": "Haiti",
         "group": "Group C",
         "group_match_number": 3,
         "auto_context": False,
@@ -82,7 +94,7 @@ def test_predict_team_returns_enabled_context_effect():
 
     payload = {
         "home_team": "Brazil",
-        "away_team": "Japan",
+        "away_team": "Haiti",
         "group": "Group C",
         "group_match_number": 3,
         "stadium_key": "Mexico City",
@@ -98,7 +110,7 @@ def test_predict_team_returns_enabled_context_effect():
     assert "context_effect" in data
     assert data["context_effect"]["enabled"] is True
     assert data["context_effect"]["home"]["team"] == "Brazil"
-    assert data["context_effect"]["away"]["team"] == "Japan"
+    assert data["context_effect"]["away"]["team"] == "Haiti"
 
 
 def test_build_match_context_effect_handles_unknown_group():

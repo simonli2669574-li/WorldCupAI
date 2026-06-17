@@ -1,0 +1,16 @@
+{
+  "Ghana": {
+    "attacking_threat": 68,
+    "wide_threat": 72,
+    "defensive_age_risk": 0.36,
+    "squad_experience": 57,
+    "note": "Manual player model ratings, not official ratings."
+  },
+  "Panama": {
+    "attacking_threat": 61,
+    "wide_threat": 58,
+    "defensive_age_risk": 0.42,
+    "squad_experience": 52,
+    "note": "Manual player model ratings, not official ratings."
+  }
+}

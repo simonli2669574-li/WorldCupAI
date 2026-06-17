@@ -1286,6 +1286,79 @@
       `;
     }
 
+    function renderPlayerProfileCard(title, profile) {
+      return `
+        <section class="context-team-card">
+          <h4>${escapeHtml(title)}</h4>
+          <div class="detail-grid">
+            ${renderContextDetail("Team", profile?.team)}
+            ${renderContextDetail("Attacking Threat", profile?.attacking_threat)}
+            ${renderContextDetail("Wide Threat", profile?.wide_threat)}
+            ${renderContextDetail("Defensive Age Risk", profile?.defensive_age_risk)}
+            ${renderContextDetail("Squad Experience", profile?.squad_experience)}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderPlayerAnalysis(analysis) {
+      if (!analysis?.enabled) {
+        return `
+          <section class="result-card">
+            <h3>Player Analysis</h3>
+            <p class="empty">Player analysis is unavailable.</p>
+            <p class="empty">${escapeHtml(valueOrDash(analysis?.note))}</p>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="result-card">
+          <h3>Player Analysis</h3>
+          <div class="context-team-grid">
+            ${renderPlayerProfileCard("Home", analysis.home)}
+            ${renderPlayerProfileCard("Away", analysis.away)}
+          </div>
+          <p class="empty">${escapeHtml(valueOrDash(analysis.note))}</p>
+        </section>
+      `;
+    }
+
+    function renderPlayerXgEffect(prediction) {
+      const effect = prediction?.player_xg_effect;
+
+      if (!effect) {
+        return `
+          <section class="result-card">
+            <h3>Player xG Effect</h3>
+            <p class="empty">Player xG Effect unavailable.</p>
+          </section>
+        `;
+      }
+
+      if (effect.enabled === false) {
+        return `
+          <section class="result-card">
+            <h3>Player xG Effect</h3>
+            <p class="empty">Player xG modifier was not applied.</p>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="result-card">
+          <h3>Player xG Effect</h3>
+          <div class="detail-grid">
+            ${renderContextDetail("Home xG Adjustment", effect.home?.xg_adjustment)}
+            ${renderContextDetail("Away xG Adjustment", effect.away?.xg_adjustment)}
+            ${renderContextDetail("Home Reason", effect.home?.reason)}
+            ${renderContextDetail("Away Reason", effect.away?.reason)}
+            ${renderContextDetail("Note", effect.note)}
+          </div>
+        </section>
+      `;
+    }
+
     function showPredictionError(message, details) {
       resultsBox.innerHTML = `
         <section class="result-card error-box" role="alert">
@@ -1306,6 +1379,7 @@
       const summary = data.summary?.reason ?? data.report?.final_action ?? data.summary ?? data.report ?? null;
       const marketOdds = data.market_odds ?? data.markets ?? null;
       const kellyStrategy = data.kelly_strategy ?? data.kelly?.best_value ?? data.kelly ?? null;
+      const playerXgEffectHtml = renderPlayerXgEffect(data);
 
       resultsBox.innerHTML = `
         <section class="result-card">
@@ -1349,6 +1423,10 @@
         </section>
 
         ${renderContextEffect(data.context_effect)}
+
+        ${renderPlayerAnalysis(data.player_analysis)}
+
+        ${playerXgEffectHtml}
 
         <section class="result-card">
           <h3>Top Scores Card</h3>

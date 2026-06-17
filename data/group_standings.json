@@ -10,7 +10,7 @@
         "goal_difference": 3
       },
       {
-        "team": "Japan",
+        "team": "Morocco",
         "played": 2,
         "points": 4,
         "goals_for": 3,
@@ -18,7 +18,7 @@
         "goal_difference": 1
       },
       {
-        "team": "Germany",
+        "team": "Scotland",
         "played": 2,
         "points": 3,
         "goals_for": 2,
@@ -26,12 +26,12 @@
         "goal_difference": 0
       },
       {
-        "team": "United States",
+        "team": "Haiti",
         "played": 2,
         "points": 1,
-        "goals_for": 1,
-        "goals_against": 5,
-        "goal_difference": -4
+        "goals_for": 0,
+        "goals_against": 3,
+        "goal_difference": -3
       }
     ]
   }

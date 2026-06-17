@@ -8,6 +8,7 @@ from risk import apply_risk_control
 from market import calculate_market_edges
 from report import generate_value_summary, generate_report
 from match_context import build_match_context_effect, apply_context_xg
+from player_analysis import build_player_analysis, apply_player_xg_modifier
 
 from agents.odds_agent import analyze_odds
 from agents.lineup_agent import analyze_lineup
@@ -398,6 +399,16 @@ def run_team_prediction(match: TeamMatchInput):
             context_effect
         )
 
+    player_analysis = build_player_analysis(
+        home_key,
+        away_key
+    )
+    home_xg, away_xg, player_xg_effect = apply_player_xg_modifier(
+        home_xg,
+        away_xg,
+        player_analysis
+    )
+
     N = 5000
 
     home_win = 0
@@ -526,6 +537,10 @@ def run_team_prediction(match: TeamMatchInput):
         "weather": weather_result,
 
         "context_effect": context_effect,
+
+        "player_analysis": player_analysis,
+
+        "player_xg_effect": player_xg_effect,
 
         "market_edges": market_edges,
 
