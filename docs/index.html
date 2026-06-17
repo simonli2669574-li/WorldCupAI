@@ -307,6 +307,44 @@
       outline: 3px solid rgba(37, 99, 235, 0.14);
     }
 
+    .advanced-context {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      padding: 16px;
+    }
+
+    .advanced-context h3,
+    .advanced-context p {
+      grid-column: 1 / -1;
+    }
+
+    .advanced-context h3 {
+      margin: 0;
+    }
+
+    .advanced-context p {
+      margin: -6px 0 0;
+    }
+
+    .checkbox-label {
+      align-content: start;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 8px;
+      min-height: 42px;
+    }
+
+    .checkbox-label input {
+      width: 18px;
+      height: 18px;
+      min-height: 18px;
+      margin: 2px 0 0;
+      padding: 0;
+    }
+
     .full {
       grid-column: 1 / -1;
     }
@@ -458,6 +496,26 @@
       word-break: break-word;
     }
 
+    .context-team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .context-team-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface-soft);
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .context-team-card h4 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
     ul {
       margin: 8px 0 0;
       padding-left: 18px;
@@ -594,6 +652,11 @@
         grid-template-columns: 1fr;
       }
 
+      .advanced-context,
+      .context-team-grid {
+        grid-template-columns: 1fr;
+      }
+
       .header-inner {
         align-items: flex-start;
         flex-direction: column;
@@ -675,6 +738,44 @@
               <option value="auto">auto</option>
             </select>
           </label>
+
+          <section class="advanced-context full" aria-labelledby="advanced-context-title">
+            <h3 id="advanced-context-title">Advanced Match Context</h3>
+            <p class="muted">Automatically adjusts xG based on group-stage motivation, qualification status, and rotation risk.</p>
+
+            <label class="checkbox-label">
+              <input id="auto_context" name="auto_context" type="checkbox" checked>
+              <span>Auto Context</span>
+            </label>
+
+            <label>
+              Group
+              <select id="group" name="group">
+                <option value="" selected>None</option>
+                <option value="Group A">Group A</option>
+                <option value="Group B">Group B</option>
+                <option value="Group C">Group C</option>
+                <option value="Group D">Group D</option>
+                <option value="Group E">Group E</option>
+                <option value="Group F">Group F</option>
+                <option value="Group G">Group G</option>
+                <option value="Group H">Group H</option>
+                <option value="Group I">Group I</option>
+                <option value="Group J">Group J</option>
+                <option value="Group K">Group K</option>
+                <option value="Group L">Group L</option>
+              </select>
+            </label>
+
+            <label>
+              Group Match Number
+              <select id="group_match_number" name="group_match_number">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </label>
+          </section>
 
           <label>
             Open home odds
@@ -781,13 +882,19 @@
       home_team: "worldcupai_home_team",
       away_team: "worldcupai_away_team",
       stadium_key: "worldcupai_stadium_key",
+      auto_context: "worldcupai_auto_context",
+      group: "worldcupai_group",
+      group_match_number: "worldcupai_group_match_number",
       apiBaseUrl: "worldcupai_apiBaseUrl"
     };
     const DEFAULT_FORM_STATE = {
       home_team: "Argentina",
       away_team: "Japan",
       stadium_key: "Mexico City",
-      weather_mode: "manual"
+      weather_mode: "manual",
+      auto_context: true,
+      group: "",
+      group_match_number: "1"
     };
 
     const numberFields = [
@@ -838,7 +945,12 @@
         home_team: localStorage.getItem(STORAGE_KEYS.home_team) || DEFAULT_FORM_STATE.home_team,
         away_team: localStorage.getItem(STORAGE_KEYS.away_team) || DEFAULT_FORM_STATE.away_team,
         stadium_key: localStorage.getItem(STORAGE_KEYS.stadium_key) || DEFAULT_FORM_STATE.stadium_key,
-        weather_mode: DEFAULT_FORM_STATE.weather_mode
+        weather_mode: DEFAULT_FORM_STATE.weather_mode,
+        auto_context: localStorage.getItem(STORAGE_KEYS.auto_context) === null
+          ? DEFAULT_FORM_STATE.auto_context
+          : localStorage.getItem(STORAGE_KEYS.auto_context) === "true",
+        group: localStorage.getItem(STORAGE_KEYS.group) || DEFAULT_FORM_STATE.group,
+        group_match_number: localStorage.getItem(STORAGE_KEYS.group_match_number) || DEFAULT_FORM_STATE.group_match_number
       };
     }
 
@@ -846,6 +958,9 @@
       localStorage.setItem(STORAGE_KEYS.home_team, document.getElementById("home_team").value);
       localStorage.setItem(STORAGE_KEYS.away_team, document.getElementById("away_team").value);
       localStorage.setItem(STORAGE_KEYS.stadium_key, document.getElementById("stadium_key").value);
+      localStorage.setItem(STORAGE_KEYS.auto_context, String(document.getElementById("auto_context").checked));
+      localStorage.setItem(STORAGE_KEYS.group, document.getElementById("group").value);
+      localStorage.setItem(STORAGE_KEYS.group_match_number, document.getElementById("group_match_number").value);
     }
 
     function updateApiDisplay() {
@@ -911,6 +1026,10 @@
 
     function formatBooleanHit(value) {
       return value ? "✅" : "❌";
+    }
+
+    function formatYesNo(value) {
+      return value ? "Yes" : "No";
     }
 
     async function checkHealth() {
@@ -1023,6 +1142,12 @@
       }
     }
 
+    function applyMatchContextState(state) {
+      document.getElementById("auto_context").checked = Boolean(state.auto_context);
+      document.getElementById("group").value = state.group;
+      document.getElementById("group_match_number").value = state.group_match_number;
+    }
+
     function applyDefaultMatch() {
       document.getElementById("home_team_search").value = "";
       document.getElementById("away_team_search").value = "";
@@ -1030,6 +1155,7 @@
       populateTeamSelect("away_team", allTeams, DEFAULT_FORM_STATE.away_team);
       populateStadiumSelect(allStadiums, DEFAULT_FORM_STATE.stadium_key);
       document.getElementById("weather_mode").value = DEFAULT_FORM_STATE.weather_mode;
+      applyMatchContextState(DEFAULT_FORM_STATE);
       saveFormState();
     }
 
@@ -1053,7 +1179,10 @@
         home_team: document.getElementById("home_team").value,
         away_team: document.getElementById("away_team").value,
         stadium_key: document.getElementById("stadium_key").value,
-        weather_mode: document.getElementById("weather_mode").value
+        weather_mode: document.getElementById("weather_mode").value,
+        auto_context: document.getElementById("auto_context").checked,
+        group: document.getElementById("group").value || null,
+        group_match_number: Number(document.getElementById("group_match_number").value)
       };
 
       numberFields.forEach((field) => {
@@ -1077,6 +1206,84 @@
       }
 
       return `<li>${escapeHtml(valueOrDash(item?.score))} - ${escapeHtml(valueOrDash(item?.prob))}%</li>`;
+    }
+
+    function getContextSide(effect, side) {
+      return effect?.[side] ?? effect?.[`${side}_context`] ?? effect?.[`${side}_team_context`] ?? null;
+    }
+
+    function renderContextDetail(label, value, isBoolean = false) {
+      return `
+        <div class="detail-item">
+          <span class="detail-label">${escapeHtml(label)}</span>
+          <span class="detail-value">${escapeHtml(isBoolean ? formatYesNo(value) : valueOrDash(value))}</span>
+        </div>
+      `;
+    }
+
+    function renderTeamContextCard(title, context) {
+      const team = context?.team ?? context?.team_name ?? title;
+      const available = Boolean(context?.available);
+
+      if (!available) {
+        return `
+          <section class="context-team-card">
+            <h4>${escapeHtml(title)}</h4>
+            <div class="detail-grid">
+              ${renderContextDetail("Team", team)}
+              ${renderContextDetail("Available", false, true)}
+            </div>
+            <p class="empty">Team context is unavailable in local group standings.</p>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="context-team-card">
+          <h4>${escapeHtml(title)}</h4>
+          <div class="detail-grid">
+            ${renderContextDetail("Team", team)}
+            ${renderContextDetail("Available", context.available, true)}
+            ${renderContextDetail("Points", context.points)}
+            ${renderContextDetail("Played", context.played)}
+            ${renderContextDetail("Group Position", context.group_position)}
+            ${renderContextDetail("Likely Qualified", context.likely_qualified, true)}
+            ${renderContextDetail("Must Win", context.must_win, true)}
+            ${renderContextDetail("Draw Is Enough", context.draw_is_enough, true)}
+            ${renderContextDetail("Rotation Risk", context.rotation_risk)}
+            ${renderContextDetail("Motivation Level", context.motivation_level)}
+            ${renderContextDetail("Attacking Urgency", context.attacking_urgency)}
+            ${renderContextDetail("Defensive Risk", context.defensive_risk)}
+            ${renderContextDetail("xG Multiplier", context.xg_multiplier)}
+            ${renderContextDetail("Note", context.note)}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderContextEffect(effect) {
+      if (!effect?.enabled) {
+        return `
+          <section class="result-card">
+            <h3>Context Effect</h3>
+            <p class="empty">Automatic context was not applied.</p>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="result-card">
+          <h3>Context Effect</h3>
+          <div class="detail-grid">
+            ${renderContextDetail("Group", effect.group)}
+            ${renderContextDetail("Group Match Number", effect.group_match_number)}
+          </div>
+          <div class="context-team-grid">
+            ${renderTeamContextCard("Home", getContextSide(effect, "home"))}
+            ${renderTeamContextCard("Away", getContextSide(effect, "away"))}
+          </div>
+        </section>
+      `;
     }
 
     function showPredictionError(message, details) {
@@ -1140,6 +1347,8 @@
             </div>
           </div>
         </section>
+
+        ${renderContextEffect(data.context_effect)}
 
         <section class="result-card">
           <h3>Top Scores Card</h3>
@@ -1346,6 +1555,9 @@
     document.getElementById("home_team").addEventListener("change", saveFormState);
     document.getElementById("away_team").addEventListener("change", saveFormState);
     document.getElementById("stadium_key").addEventListener("change", saveFormState);
+    document.getElementById("auto_context").addEventListener("change", saveFormState);
+    document.getElementById("group").addEventListener("change", saveFormState);
+    document.getElementById("group_match_number").addEventListener("change", saveFormState);
     saveApiButton.addEventListener("click", saveApiBaseUrl);
     exampleButton.addEventListener("click", fillExampleMatch);
     resetButton.addEventListener("click", resetForm);
@@ -1353,6 +1565,7 @@
     form.addEventListener("submit", submitPrediction);
 
     updateApiDisplay();
+    applyMatchContextState(getSavedFormState());
     checkHealth();
     loadTeams();
     loadStadiums();
