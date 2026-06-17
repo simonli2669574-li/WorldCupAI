@@ -1,10 +1,45 @@
 from fastapi.testclient import TestClient
 
 from main import app
-from player_analysis import build_player_analysis, apply_player_xg_modifier
+from player_analysis import (
+    analyze_team_players,
+    apply_player_xg_modifier,
+    build_player_analysis,
+    load_players,
+)
 
 
 client = TestClient(app)
+
+
+def test_load_players_returns_group_l_profiles():
+
+    players = load_players()
+
+    assert "England" in players
+    assert "Croatia" in players
+    assert "Ghana" in players
+    assert "Panama" in players
+
+
+def test_analyze_team_players_available_for_england_and_croatia():
+
+    england = analyze_team_players("England")
+    croatia = analyze_team_players("Croatia")
+
+    assert england["available"] is True
+    assert croatia["available"] is True
+    assert england["key_players"]
+    assert croatia["key_players"]
+
+
+def test_build_player_analysis_enabled_for_group_l_matchups():
+
+    england_croatia = build_player_analysis("England", "Croatia")
+    england_ghana = build_player_analysis("England", "Ghana")
+
+    assert england_croatia["enabled"] is True
+    assert england_ghana["enabled"] is True
 
 
 def test_apply_player_xg_modifier_returns_effect_for_available_profiles():
@@ -58,6 +93,27 @@ def test_predict_team_returns_player_analysis_and_player_xg_effect():
     payload = {
         "home_team": "Ghana",
         "away_team": "Panama",
+        "stadium_key": "Mexico City",
+        "weather_mode": "manual",
+    }
+
+    response = client.post("/predict_team", json=payload)
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert "player_analysis" in data
+    assert "player_xg_effect" in data
+    assert data["player_analysis"]["enabled"] is True
+    assert data["player_xg_effect"]["enabled"] is True
+
+
+def test_predict_team_england_croatia_returns_player_analysis_and_xg_effect():
+
+    payload = {
+        "home_team": "England",
+        "away_team": "Croatia",
         "stadium_key": "Mexico City",
         "weather_mode": "manual",
     }

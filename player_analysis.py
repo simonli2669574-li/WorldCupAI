@@ -3,7 +3,18 @@ import json
 from agents.team_agent import resolve_team_name
 
 
-PLAYER_MODEL_NOTE = "Manual player model ratings, not official ratings."
+PLAYER_MODEL_NOTE = (
+    "Manual player profile, not official live roster or official rating."
+)
+
+AGGREGATE_FIELDS = {
+    "attacking_threat",
+    "wide_threat",
+    "defensive_age_risk",
+    "squad_experience",
+}
+
+DEFENSIVE_POSITIONS = {"GK", "CB", "DF", "FB", "LB", "RB", "WB", "DM"}
 
 
 def load_player_profiles(path="data/players.json"):
@@ -13,6 +24,11 @@ def load_player_profiles(path="data/players.json"):
             return json.load(file)
     except FileNotFoundError:
         return {}
+
+
+def load_players(path="data/players.json"):
+
+    return load_player_profiles(path)
 
 
 def _to_float(value, default=0.0):
@@ -28,22 +44,186 @@ def _clamp(value, minimum, maximum):
     return max(minimum, min(maximum, value))
 
 
+def _players_from_profile(profile):
+
+    if not isinstance(profile, dict):
+        return []
+
+    players = profile.get("players")
+
+    if not isinstance(players, list):
+        return []
+
+    return [
+        player
+        for player in players
+        if isinstance(player, dict)
+    ]
+
+
+def _has_aggregate_profile(profile):
+
+    return isinstance(profile, dict) and AGGREGATE_FIELDS.issubset(profile)
+
+
+def _has_player_profile(profile):
+
+    return len(_players_from_profile(profile)) > 0
+
+
 def _profile_available(profile):
 
-    required_fields = {
-        "attacking_threat",
-        "wide_threat",
-        "defensive_age_risk",
-        "squad_experience",
+    return _has_aggregate_profile(profile) or _has_player_profile(profile)
+
+
+def _weighted_average(players, field, default=0.0):
+
+    total_weight = 0.0
+    weighted_total = 0.0
+
+    for player in players:
+        value = _to_float(player.get(field), None)
+
+        if value is None:
+            continue
+
+        importance = _clamp(_to_float(player.get("importance"), 0.5), 0.0, 1.0)
+        role = player.get("role")
+
+        if role == "starter":
+            role_weight = 1.0
+        elif role == "rotation":
+            role_weight = 0.72
+        else:
+            role_weight = 0.45
+
+        weight = max(0.05, importance * role_weight)
+        weighted_total += value * weight
+        total_weight += weight
+
+    if total_weight == 0:
+        return default
+
+    return weighted_total / total_weight
+
+
+def _is_defensive_player(player):
+
+    position = str(player.get("position", "")).upper()
+    tags = player.get("tags", [])
+
+    if position in DEFENSIVE_POSITIONS:
+        return True
+
+    if not isinstance(tags, list):
+        return False
+
+    return any(
+        "center_back" in str(tag)
+        or "full_back" in str(tag)
+        or "defensive" in str(tag)
+        or "goalkeeper" in str(tag)
+        for tag in tags
+    )
+
+
+def _summarize_key_players(players):
+
+    key_players = sorted(
+        players,
+        key=lambda player: (
+            _to_float(player.get("importance")),
+            _to_float(player.get("overall")),
+        ),
+        reverse=True,
+    )
+
+    return [
+        {
+            "name": player.get("name", ""),
+            "position": player.get("position", ""),
+            "role": player.get("role", ""),
+            "overall": _to_float(player.get("overall")),
+            "importance": _to_float(player.get("importance")),
+            "tags": player.get("tags", []),
+        }
+        for player in key_players[:5]
+    ]
+
+
+def _normalize_player_profile(team_name, profile):
+
+    players = _players_from_profile(profile)
+    defensive_players = [
+        player
+        for player in players
+        if _is_defensive_player(player)
+    ]
+
+    if not defensive_players:
+        defensive_players = players
+
+    attacking_threat = round(
+        _clamp(_weighted_average(players, "attacking_threat"), 1, 100),
+        1,
+    )
+    wide_threat = round(
+        _clamp(_weighted_average(players, "wide_threat"), 1, 100),
+        1,
+    )
+    defensive_age_risk = round(
+        _clamp(
+            _weighted_average(defensive_players, "age_risk"),
+            0.0,
+            1.0,
+        ),
+        2,
+    )
+    squad_experience = round(
+        _clamp(_weighted_average(players, "experience"), 1, 100),
+        1,
+    )
+
+    return {
+        "team": team_name,
+        "available": True,
+        "attacking_threat": attacking_threat,
+        "wide_threat": wide_threat,
+        "defensive_age_risk": defensive_age_risk,
+        "squad_experience": squad_experience,
+        "key_players": _summarize_key_players(players),
+        "player_count": len(players),
+        "data_source_note": profile.get("data_source_note", PLAYER_MODEL_NOTE),
+        "note": profile.get("data_source_note", PLAYER_MODEL_NOTE),
     }
 
-    return isinstance(profile, dict) and required_fields.issubset(profile)
+
+def analyze_team_players(team_name, player_profiles=None):
+
+    if player_profiles is None:
+        player_profiles = load_player_profiles()
+
+    team_key = resolve_team_name(team_name) or team_name
+    profile = player_profiles.get(team_key)
+
+    if not _profile_available(profile):
+        return {
+            "team": team_key,
+            "available": False,
+            "note": PLAYER_MODEL_NOTE,
+        }
+
+    return _normalize_profile(team_key, profile)
 
 
 def _normalize_profile(team_name, profile):
 
+    if _has_player_profile(profile):
+        return _normalize_player_profile(team_name, profile)
+
     return {
         "team": team_name,
+        "available": True,
         "attacking_threat": _to_float(profile.get("attacking_threat")),
         "wide_threat": _to_float(profile.get("wide_threat")),
         "defensive_age_risk": _to_float(profile.get("defensive_age_risk")),
@@ -60,27 +240,27 @@ def build_player_analysis(home_team, away_team, player_profiles=None):
     home_key = resolve_team_name(home_team) or home_team
     away_key = resolve_team_name(away_team) or away_team
 
-    home_profile = player_profiles.get(home_key)
-    away_profile = player_profiles.get(away_key)
+    home_profile = analyze_team_players(home_key, player_profiles)
+    away_profile = analyze_team_players(away_key, player_profiles)
 
-    if not _profile_available(home_profile) or not _profile_available(away_profile):
+    if not home_profile.get("available") or not away_profile.get("available"):
         return {
             "enabled": False,
             "home": {
                 "team": home_key,
-                "available": _profile_available(home_profile),
+                "available": home_profile.get("available", False),
             },
             "away": {
                 "team": away_key,
-                "available": _profile_available(away_profile),
+                "available": away_profile.get("available", False),
             },
             "note": PLAYER_MODEL_NOTE,
         }
 
     return {
         "enabled": True,
-        "home": _normalize_profile(home_key, home_profile),
-        "away": _normalize_profile(away_key, away_profile),
+        "home": home_profile,
+        "away": away_profile,
         "note": PLAYER_MODEL_NOTE,
     }
 
